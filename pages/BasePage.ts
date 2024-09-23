@@ -8,6 +8,12 @@ export default class BasePage {
     }
 
     private headerLogo() { return this.page.getByTestId('logo').first(); }
+    private loginBtn() { return this.page.locator("[class*='NavbarAuthBlock_buttonEnter_']"); }
+    private userProfilePicture() { return this.page.getByTestId('avatarBlock'); }
+    private userProfileDropdown() { return this.page.locator("div[class*='ProfileDropdownMenu_container_']"); }
+    private userDropdownEmail() { return this.page.locator("div[class*='ProfileDropdownMenu_email_']"); }
+    private userDropdownMyProfileBtn() { return this.page.getByTestId('profile'); }
+    private userDropdownLogoutBtn() { return this.page.getByTestId('logout'); }
     private footerLogo() { return this.page.getByTestId('logo').nth(1); }
     private privacyPolicyLink() { return this.page.getByTestId('politika-konfidenciinosti'); }
     private cookiesPolicyLink() { return this.page.getByTestId('pravila-vikoristannya-failiv-cookie'); }
@@ -19,6 +25,32 @@ export default class BasePage {
 
     async clickSiteLogo() {
         await this.headerLogo().click()
+    }
+    async clickLoginBtn() {
+        await this.loginBtn().click()
+    }
+    async clickUserProfilePicture() {
+        await this.userProfilePicture().click()
+    }
+    async clickMyProfileBtn() {
+        await this.userDropdownMyProfileBtn().click()
+    }
+    async clickLogoutBtn() {
+        await this.userDropdownLogoutBtn().click()
+    }
+    async goToProfile() {
+        await this.clickUserProfilePicture();
+        await this.clickMyProfileBtn();
+    }
+    async logout() {
+        await this.clickUserProfilePicture();
+        await this.clickLogoutBtn();
+    }
+    async assertUserDropdownVisible() {
+        await expect(this.userProfileDropdown()).toBeVisible();
+    }
+    async assertUserEmailIsDisplayed(email: string) {
+        await expect(this.userDropdownEmail()).toHaveText(email);
     }
     async clickPrivacyPolicyLink() {
         await this.privacyPolicyLink().click();
