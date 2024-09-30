@@ -14,7 +14,8 @@ export default class HeaderElements {
     private userDropdownEmail() { return this.page.locator("div[class*='ProfileDropdownMenu_email_']"); }
     private userDropdownMyProfileBtn() { return this.page.getByTestId('profile'); }
     private userDropdownLogoutBtn() { return this.page.getByTestId('logout'); }
-
+    private userDropdownMyUnitsBtn() { return this.page.getByTestId('units'); }
+    
     async clickLoginBtn() {
         await this.loginBtn().click()
     }
@@ -27,9 +28,16 @@ export default class HeaderElements {
     async clickLogoutBtn() {
         await this.userDropdownLogoutBtn().click()
     }
+    async clickMyUnitsBtn() {
+        await this.userDropdownMyUnitsBtn().click()
+    }
     async goToProfile() {
         await this.clickUserProfilePicture();
         await this.clickMyProfileBtn();
+    }
+    async goToMyUnits() {
+        await this.clickUserProfilePicture();
+        await this.clickMyUnitsBtn();
     }
     async logout() {
         await this.clickUserProfilePicture();
