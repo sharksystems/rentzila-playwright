@@ -53,7 +53,8 @@ export default class UnitListingsPage extends BasePage {
         }
     }
     async clickProductListing() {
-        await this.page.waitForTimeout(300);
+        await this.productListing.waitFor();
+        await this.page.waitForTimeout(700);
         await this.productListing.click();
     }
 }

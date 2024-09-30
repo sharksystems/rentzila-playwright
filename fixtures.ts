@@ -13,6 +13,8 @@ import closePopupIfVisible from './helpers/popupHelper';
 import LoginPopup from './page_elements/LoginPopup';
 import LoginData from './data/LoginData';
 import MyProfilePage from './pages/MyProfilePage';
+import HeaderElements from './page_elements/headerElements';
+import FooterElements from './page_elements/footerElements';
 
 type TestFixtures = {
     page: Page;
@@ -29,6 +31,8 @@ type TestFixtures = {
     loginData: LoginData;
     loginPopup: LoginPopup;
     myProfilePage: MyProfilePage;
+    headerElements: HeaderElements;
+    footerElements: FooterElements;
 };
 
 export const test = baseTest.extend<TestFixtures>({
@@ -37,6 +41,16 @@ export const test = baseTest.extend<TestFixtures>({
         const apiRequestContext: APIRequestContext = await request.newContext();
         const apiHelper = new ApiHelper(apiRequestContext);
         await use(apiHelper);
+    },
+
+    headerElements: async ({ page }, use) => {
+        const headerElements = new HeaderElements(page);
+        await use(headerElements);
+    },
+    
+    footerElements: async ({ page }, use) => {
+        const footerElements = new FooterElements(page);
+        await use(footerElements);
     },
 
     homePage: async ({ page }, use) => {

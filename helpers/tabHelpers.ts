@@ -1,9 +1,9 @@
-import { Page } from '@playwright/test';
 import HomePage from '../pages/HomePage';
 import UnitListingsPage from '../pages/UnitListingsPage';
 import SingleUnitPage from '../pages/SingleUnitPage';
+import HeaderElements from '../page_elements/headerElements';
 
-export async function verifyServicesInTab(page: Page = this.page, homePage: HomePage, unitListingsPage: UnitListingsPage, singleUnitPage: SingleUnitPage, tabNumber: number) {
+export async function verifyServicesInTab(headerElements: HeaderElements, homePage: HomePage, unitListingsPage: UnitListingsPage, singleUnitPage: SingleUnitPage, tabNumber: number) {
 
     for (let i = 0; i < 7; i++) {
         await (await homePage.getServicesTabByNumber(tabNumber)).click();
@@ -16,30 +16,29 @@ export async function verifyServicesInTab(page: Page = this.page, homePage: Home
         if (!visible) {
             console.warn(`Service "${serviceCategory}" checkbox not found. Retrying...`);
 
-            await homePage.clickSiteLogo();
+            await headerElements.clickSiteLogo();
             await (await homePage.getServicesTabByNumber(tabNumber)).click();
             await (await homePage.getServiceByNumber(i)).click();
             await unitListingsPage.assertFilterSelectedWithName(serviceCategory);
             await unitListingsPage.verifyCheckboxChecked(serviceCategory);
             await unitListingsPage.clickProductListing();
             await singleUnitPage.assertServiceTagVisible(serviceCategory);
-            await unitListingsPage.clickSiteLogo();
+            await headerElements.clickSiteLogo();
         }
         else {
             await unitListingsPage.assertFilterSelectedWithName(serviceCategory);
             await unitListingsPage.verifyCheckboxChecked(serviceCategory);
             await unitListingsPage.clickProductListing();
             await singleUnitPage.assertServiceTagVisible(serviceCategory);
-            await unitListingsPage.clickSiteLogo();
+            await headerElements.clickSiteLogo();
         }
     }
 }
 
-export async function verifyEquipmentInTab(page: Page = this.page, homePage: HomePage, unitListingsPage: UnitListingsPage, singleUnitPage: SingleUnitPage, tabNumber: number) {
+export async function verifyEquipmentInTab(headerElements: HeaderElements, homePage: HomePage, unitListingsPage: UnitListingsPage, singleUnitPage: SingleUnitPage, tabNumber: number) {
 
     for (let i = 0; i < 7; i++) {
         await (await homePage.getEquipmentTabByNumber(tabNumber)).click();
-        await page.waitForTimeout(200);
         await homePage.assertNumberOfEquipment();
         let mainCategory: string = await (await homePage.getEquipmentTabByNumber(tabNumber)).innerText();
 
@@ -49,6 +48,6 @@ export async function verifyEquipmentInTab(page: Page = this.page, homePage: Hom
         await unitListingsPage.verifyEquipmentCategoryisSelected(mainCategory, equipmentCategory);
         await unitListingsPage.clickProductListing();
         await singleUnitPage.assertEqupmentCategoryVisible(equipmentCategory);
-        await unitListingsPage.clickSiteLogo();
+        await headerElements.clickSiteLogo();
     }
 }

@@ -13,7 +13,7 @@ export default defineConfig({
   timeout: 50000,
 
   use: {  
-    baseURL: 'https://dev.rentzila.com.ua',
+    baseURL: process.env.BASE_URL || 'BASE_URL',
     actionTimeout: 10000,
     trace: 'on-first-retry',
   },
