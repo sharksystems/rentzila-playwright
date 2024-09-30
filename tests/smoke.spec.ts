@@ -6,26 +6,26 @@ import { expect } from '@playwright/test';
 
 test.describe('Smoke Test', () => {
 
-  test('Verify Footer Links', async ({ homePage, unitListingsPage, privacyPolicyPage, cookiesPolicyPage, termsOfServicePage, tendersPage, jobRequestsPage }) => {
-    await homePage.assertFooterElementsVisible();
+  test('Verify Footer Links', async ({homePage, footerElements, headerElements, unitListingsPage, privacyPolicyPage, cookiesPolicyPage, termsOfServicePage, tendersPage, jobRequestsPage }) => {
+    await footerElements.assertFooterElementsVisible();
 
-    await homePage.clickPrivacyPolicyLink();
+    await footerElements.clickPrivacyPolicyLink();
     await privacyPolicyPage.assertUserIsOnPrivacyPolicyPage();
-    await privacyPolicyPage.clickCookiesPolicyLink();
+    await footerElements.clickCookiesPolicyLink();
     await cookiesPolicyPage.assertUserIsOnCookiesPolicyPage();
 
-    await cookiesPolicyPage.clickTermsOfServiceLink();
+    await footerElements.clickTermsOfServiceLink();
     await termsOfServicePage.assertUserIsOnTermsOfServicePage();
 
-    await termsOfServicePage.clickFooterListingsLink();
+    await footerElements.clickFooterListingsLink();
     await unitListingsPage.assertUserIsOnUnitListingsPage();
-    await unitListingsPage.clickSiteLogo();
+    await headerElements.clickSiteLogo();
 
-    await homePage.clickFooterTendersLink();
+    await footerElements.clickFooterTendersLink();
     await tendersPage.assertUserIsOnTendersPage();
-    await tendersPage.clickSiteLogo();
+    await headerElements.clickSiteLogo();
 
-    await homePage.clickFooterJobRequestsLink();
+    await footerElements.clickFooterJobRequestsLink();
     await jobRequestsPage.assertUserIsOnJobRequestsPage();
   });
   test('Verify Callback Request Form', async ({ homePage, randomData, apiHelper }) => {

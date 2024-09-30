@@ -10,6 +10,8 @@ import JobRequestsPage from './pages/JobRequestsPage';
 import RandomData from './data/RandomData';
 import { ApiHelper } from './helpers/ApiHelper';
 import closePopupIfVisible from './helpers/popupHelper';
+import HeaderElements from './page_elements/headerElements';
+import FooterElements from './page_elements/footerElements';
 
 type TestFixtures = {
     page: Page;
@@ -23,6 +25,8 @@ type TestFixtures = {
     tendersPage: TendersPage;
     jobRequestsPage: JobRequestsPage;
     randomData: RandomData;
+    headerElements: HeaderElements;
+    footerElements: FooterElements;
 };
 
 export const test = baseTest.extend<TestFixtures>({
@@ -31,6 +35,16 @@ export const test = baseTest.extend<TestFixtures>({
         const apiRequestContext: APIRequestContext = await request.newContext();
         const apiHelper = new ApiHelper(apiRequestContext);
         await use(apiHelper);
+    },
+
+    headerElements: async ({ page }, use) => {
+        const headerElements = new HeaderElements(page);
+        await use(headerElements);
+    },
+    
+    footerElements: async ({ page }, use) => {
+        const footerElements = new FooterElements(page);
+        await use(footerElements);
     },
 
     homePage: async ({ page }, use) => {
