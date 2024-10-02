@@ -1,32 +1,37 @@
 import BasePage from './BasePage';
-import { expect, Page } from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
 
 
 export default class HomePage extends BasePage {
+    private readonly servicesTabs: Locator;
+    private readonly serviceItems: Locator;
+    private readonly equipmentTabs: Locator;
+    private readonly equipmentItems: Locator;
+    private readonly nameInput: Locator;
+    private readonly phoneNumberInput: Locator;
+    private readonly submitBtn: Locator;
+    private readonly phoneInputErrorMsg: Locator;
+    private readonly nameInputErrorMsg: Locator;
+    private readonly nameInputErrorState: Locator;
+    private readonly phoneInputErrorState: Locator;
+
     constructor(page: Page) {
         super(page);
+        this.servicesTabs = this.page.locator('div[data-testid*="services_"]');
+        this.serviceItems = this.page.locator('div[data-testid*="service_"]');
+        this.equipmentTabs = this.page.locator('h3[data-testid*="specialEquipment_"]');
+        this.equipmentItems = this.page.locator('div[data-testid*="category_"]');
+        this.nameInput = this.page.locator("input[name='name']");
+        this.phoneNumberInput = this.page.locator('#mobile');
+        this.submitBtn = this.page.locator("button[type='submit']");
+        this.phoneInputErrorMsg = this.page.locator('#mobile~p');
+        this.nameInputErrorMsg = this.page.locator("input[name='name']~p");
+        this.nameInputErrorState = this.page.locator("input[name='name'][class*='ConsultationForm_error_']");
+        this.phoneInputErrorState = this.page.locator("#mobile[class*='ConsultationForm_error_']");
     }
-
-    private servicesTabs = this.page.locator('div[data-testid*="services_"]')
-    private serviceItems = this.page.locator('div[data-testid*="service_"]')
-    private equipmentTabs = this.page.locator('h3[data-testid*="specialEquipment_"]');
-    private equipmentItems = this.page.locator('div[data-testid*="category_"]');
-    private nameInput = this.page.locator("input[name='name']");
-    private phoneNumberInput = this.page.locator('#mobile');
-    private submitBtn = this.page.locator("button[type='submit']");
-    private phoneInputErrorMsg = this.page.locator('#mobile~p');
-    private nameInputErrorMsg = this.page.locator("input[name='name']~p");
-    private nameInputErrorState = this.page.locator("input[name='name'][class*='ConsultationForm_error_']")
-    private phoneInputErrorState = this.page.locator("#mobile[class*='ConsultationForm_error_']");
 
     async clickFormSubmitBtn() {
         await this.submitBtn.click();
-    }
-    async assertNameInputErrorStateVisible() {
-        expect(this.nameInputErrorState).toBeVisible();
-    }
-    async assertPhoneInputErrorStateVisible() {
-        expect(this.phoneInputErrorState).toBeVisible();
     }
     async assertNameInputErrorStateNotVisible() {
         expect(this.nameInputErrorState).not.toBeVisible();
@@ -34,10 +39,12 @@ export default class HomePage extends BasePage {
     async assertPhoneInputErrorStateNotVisible() {
         expect(this.phoneInputErrorState).not.toBeVisible();
     }
-    async assertNameErrorMsgVisible(message: string) {
+    async assertNameErrorVisibleWithText(message: string) {
+        expect(this.nameInputErrorState).toBeVisible();
         expect(this.nameInputErrorMsg).toHaveText(message);
     }
-    async assertPhoneErrorMsgVisible(message: string) {
+    async assertPhoneErrorVisibleWithText(message: string) {
+        expect(this.phoneInputErrorState).toBeVisible();
         expect(this.phoneInputErrorMsg).toHaveText(message);
     }
     async clickPhoneInputField() {

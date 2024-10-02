@@ -1,13 +1,14 @@
 import BasePage from './BasePage';
-import { expect, Page } from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
 import { categoryMap } from '../data/CategoryMap';
 
 export default class SingleUnitPage extends BasePage {
+    private readonly categoryNameBreadcrumb: Locator;
+
     constructor(page: Page) {
         super(page);
+        this.categoryNameBreadcrumb = this.page.locator("span[data-testid='secondCategorySpan']");
     }
-
-    private categoryNameBreadcrumb = this.page.locator("span[data-testid='secondCategorySpan']");
 
     async assertServiceTagVisible(service: string) {
         const serviceTag = this.page.locator("div[class*='UnitCharacteristics_service_']", { hasText: service });

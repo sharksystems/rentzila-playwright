@@ -6,7 +6,7 @@ import { expect } from '@playwright/test';
 
 test.describe('Smoke Test', () => {
 
-  test('Verify Footer Links', async ({homePage, footerElements, headerElements, unitListingsPage, privacyPolicyPage, cookiesPolicyPage, termsOfServicePage, tendersPage, jobRequestsPage }) => {
+  test('C214 - Verify Footer Links', async ({ homePage, footerElements, headerElements, unitListingsPage, privacyPolicyPage, cookiesPolicyPage, termsOfServicePage, tendersPage, jobRequestsPage }) => {
     await footerElements.assertFooterElementsVisible();
 
     await footerElements.clickPrivacyPolicyLink();
@@ -28,37 +28,33 @@ test.describe('Smoke Test', () => {
     await footerElements.clickFooterJobRequestsLink();
     await jobRequestsPage.assertUserIsOnJobRequestsPage();
   });
-  test('Verify Callback Request Form', async ({ homePage, randomData, apiHelper }) => {
+  test('C226 - Verify Callback Request Form', async ({ homePage, randomData, apiHelper }) => {
     await homePage.clickFormSubmitBtn();
-    await homePage.assertNameInputErrorStateVisible();
-    await homePage.assertPhoneInputErrorStateVisible();
-    await homePage.assertNameErrorMsgVisible(ErrorMessages.FIELD_EMPTY);
-    await homePage.assertPhoneErrorMsgVisible(ErrorMessages.FIELD_EMPTY);
+    await homePage.assertNameErrorVisibleWithText(ErrorMessages.fieldEmpty);
+    await homePage.assertPhoneErrorVisibleWithText(ErrorMessages.fieldEmpty);
 
-    await homePage.enterName(StaticData.NAME);
+    await homePage.enterName(StaticData.name);
     await homePage.assertNameInputErrorStateNotVisible();
-    await homePage.assertPhoneInputErrorStateVisible();
+    await homePage.assertPhoneErrorVisibleWithText(ErrorMessages.fieldEmpty);
 
     await homePage.clickPhoneInputField();
     await homePage.assertPhoneNumberExtentionPrefilled();
-    await homePage.enterPhoneNumber(StaticData.PHONE);
+    await homePage.enterPhoneNumber(StaticData.phone);
     await homePage.enterName("");
     await homePage.clickFormSubmitBtn();
-    await homePage.assertNameInputErrorStateVisible();
+    await homePage.assertNameErrorVisibleWithText(ErrorMessages.fieldEmpty);
     await homePage.assertPhoneInputErrorStateNotVisible();
 
     await homePage.enterName(randomData.getRandomName);
-    await homePage.enterPhoneNumber(StaticData.INVALID_PHONE_1);
+    await homePage.enterPhoneNumber(StaticData.invalidPhone);
     await homePage.clickFormSubmitBtn();
     await homePage.assertNameInputErrorStateNotVisible();
-    await homePage.assertPhoneInputErrorStateVisible();
-    await homePage.assertPhoneErrorMsgVisible(ErrorMessages.PHONE_INVALID);
+    await homePage.assertPhoneErrorVisibleWithText(ErrorMessages.phoneInvalid);
 
-    await homePage.enterPhoneNumber(StaticData.INVALID_PHONE_2);
+    await homePage.enterPhoneNumber(StaticData.invalidPhone2);
     await homePage.clickFormSubmitBtn();
     await homePage.assertNameInputErrorStateNotVisible();
-    await homePage.assertPhoneInputErrorStateVisible();
-    await homePage.assertPhoneErrorMsgVisible(ErrorMessages.PHONE_INVALID);
+    await homePage.assertPhoneErrorVisibleWithText(ErrorMessages.phoneInvalid);
 
     await homePage.enterPhoneNumber(randomData.getRandomPhone);
     await homePage.verifyContactFormSuccessMsg();
