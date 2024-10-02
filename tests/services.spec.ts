@@ -2,7 +2,7 @@ import { test } from '../fixtures';
 import { verifyServicesInTab } from '../helpers/tabHelpers';
 
 
-test.describe('Checking "Послуги" section on the main page ', () => {
+test.describe('C212 - Checking "Послуги" section on the main page ', () => {
 
     test('Verify Services in Tab 1', async ({ headerElements, homePage, unitListingsPage, singleUnitPage }) => {
         await verifyServicesInTab(headerElements, homePage, unitListingsPage, singleUnitPage, 0)
