@@ -10,6 +10,9 @@ import JobRequestsPage from './pages/JobRequestsPage';
 import RandomData from './data/RandomData';
 import { ApiHelper } from './helpers/ApiHelper';
 import closePopupIfVisible from './helpers/popupHelper';
+import LoginPopup from './page_elements/LoginPopup';
+import LoginData from './data/LoginData';
+import MyProfilePage from './pages/MyProfilePage';
 import HeaderElements from './page_elements/headerElements';
 import FooterElements from './page_elements/footerElements';
 
@@ -25,6 +28,9 @@ type TestFixtures = {
     tendersPage: TendersPage;
     jobRequestsPage: JobRequestsPage;
     randomData: RandomData;
+    loginData: LoginData;
+    loginPopup: LoginPopup;
+    myProfilePage: MyProfilePage;
     headerElements: HeaderElements;
     footerElements: FooterElements;
 };
@@ -92,5 +98,19 @@ export const test = baseTest.extend<TestFixtures>({
     randomData: async ({ }, use) => {
         const randomData = new RandomData();
         await use(randomData);
+    },
+
+    loginData: async ({ }, use) => {
+        const loginData = new LoginData();
+        await use(loginData);
+    },
+
+    loginPopup: async ({ page }, use) => {
+        const loginPopup = new LoginPopup(page);
+        await use(loginPopup);
+    },
+    myProfilePage: async ({ page }, use) => {
+        const myProfilePage = new MyProfilePage(page);
+        await use(myProfilePage);
     },
 });

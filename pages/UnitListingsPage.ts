@@ -1,18 +1,24 @@
 import BasePage from './BasePage';
-import { expect, Page } from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
 import { categoryMap } from '../data/CategoryMap';
 
 export default class UnitListingsPage extends BasePage {
+    private readonly productListing: Locator;
+    private readonly selectedFilter: Locator;
+    private readonly selectedEquipmentSecondCategory: Locator;
+    private readonly selectedEqupmentThirdCategory: Locator;
+    private readonly civilEngineerEquipmentDropdown: Locator;
+    private readonly farmingEquipmentDropdown: Locator;
+
     constructor(page: Page) {
         super(page);
+        this.productListing = this.page.locator("a[data-testid='link']").first();
+        this.selectedFilter = this.page.locator("div[class*='ResetFilters_selectedCategory_']");
+        this.selectedEquipmentSecondCategory = this.page.locator("div[data-testid*='namesBlock']:has(img[class*='SecondCategory_rotate_'])");
+        this.selectedEqupmentThirdCategory = this.page.locator("label[class*='ThirdCategory_active_label_']");
+        this.civilEngineerEquipmentDropdown = this.page.locator("label[for='category3'] ~ span");
+        this.farmingEquipmentDropdown = this.page.locator("label[for='category2'] ~ div[data-testid='arrowWrapper']");
     }
-
-    private productListing = this.page.locator("a[data-testid='link']").first();
-    private selectedFilter = this.page.locator("div[class*='ResetFilters_selectedCategory_']");
-    private selectedEquipmentSecondCategory = this.page.locator("div[data-testid*='namesBlock']:has(img[class*='SecondCategory_rotate_'])");
-    private selectedEqupmentThirdCategory = this.page.locator("label[class*='ThirdCategory_active_label_']");
-    private civilEngineerEquipmentDropdown = this.page.locator("label[for='category3'] ~ span")
-    private farmingEquipmentDropdown = this.page.locator("label[for='category2'] ~ div[data-testid='arrowWrapper']")
 
     async assertUserIsOnUnitListingsPage() {
         await this.assertURLContains("/products");

@@ -6,6 +6,6 @@ export default class CookiesPolicyPage extends BasePage {
         super(page);
     }
     async assertUserIsOnCookiesPolicyPage() {
-        await this.assertURLContains("/cookie-policy")
+        await this.assertURLContains("/cookie-policy");
     }
 }
