@@ -5,7 +5,7 @@ test.describe('Login Tests', () => {
     test.beforeEach(async ({ homePage, headerElements }) => {
         await headerElements.clickLoginBtn();
     });
-    
+
     test('C200.1 - Login with email missing', async ({ homePage, loginData, loginPopup }) => {
         await loginPopup.clickLoginSubmitBtn();
         await loginPopup.assertEmailOrPhoneErrorVisibleWithText(ErrorMessages.fieldEmpty);

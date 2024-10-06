@@ -15,6 +15,8 @@ import LoginData from './data/LoginData';
 import MyProfilePage from './pages/MyProfilePage';
 import HeaderElements from './page_elements/headerElements';
 import FooterElements from './page_elements/footerElements';
+import MyUnitsPage from './pages/MyUnitsPage';
+import UnitCreationPage from './pages/UnitCreationPage';
 
 type TestFixtures = {
     page: Page;
@@ -33,6 +35,8 @@ type TestFixtures = {
     myProfilePage: MyProfilePage;
     headerElements: HeaderElements;
     footerElements: FooterElements;
+    myUnitsPage: MyUnitsPage;
+    unitCreationPage: UnitCreationPage;
 };
 
 export const test = baseTest.extend<TestFixtures>({
@@ -112,5 +116,13 @@ export const test = baseTest.extend<TestFixtures>({
     myProfilePage: async ({ page }, use) => {
         const myProfilePage = new MyProfilePage(page);
         await use(myProfilePage);
+    },
+    myUnitsPage: async ({ page }, use) => {
+        const myUnitsPage = new MyUnitsPage(page);
+        await use(myUnitsPage);
+    },
+    unitCreationPage: async ({ page }, use) => {
+        const unitCreationPage = new UnitCreationPage(page);
+        await use(unitCreationPage);
     },
 });

@@ -32,4 +32,20 @@ export default class RandomData {
 
         return `+380${operatorCode}${remainingDigits}`
     }
+    generateLessThan10Symbols(): string {
+        const length = faker.number.int({ min: 1, max: 9 });
+        return faker.string.alpha(length);
+    }
+    generate10Symbols(): string {
+        return faker.string.alpha(10);
+    }
+    generate101Symbols(): string {
+        return faker.string.alpha(101);
+    }
+    generate9000Symbols(): string {
+        return faker.string.alpha(9000);
+    }
+    generate9001Symbols(): string {
+        return faker.string.alpha(9001);
+    }
 }
