@@ -1,3 +1,4 @@
+import * as path from 'path';
 import BasePage from './BasePage';
 import { expect, Locator, Page } from '@playwright/test';
 
@@ -43,6 +44,14 @@ export default class UnitCreationPage extends BasePage {
     private readonly mapCloseIcon: Locator;
     private readonly mapSelectedLocation: Locator;
     private readonly mapConfirmSelectionBtn: Locator;
+    private readonly imageBlock: Locator;
+    private readonly errorPopup: Locator;
+    private readonly errorPopupTitle: Locator;
+    private readonly errorPopupCloseBtn: Locator;
+    private readonly errorPopupOkBtn: Locator;
+    private readonly errorPopupContent: Locator;
+    private readonly imageUploadClueText: Locator;
+    private readonly imageUploadTitle: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -87,6 +96,14 @@ export default class UnitCreationPage extends BasePage {
         this.mapCloseIcon = this.page.locator("span[class*='MapPopup_icon_']");
         this.mapSelectedLocation = this.page.getByTestId('address');
         this.mapConfirmSelectionBtn = this.page.locator("button[class*='ItemButtons_darkBlueBtn_']");
+        this.imageBlock = this.page.getByTestId('imageBlock');
+        this.errorPopup = this.page.locator('div[class*="PopupLayout_content_"]');
+        this.errorPopupTitle = this.page.locator('div[class*="PopupLayout_label_"]');
+        this.errorPopupCloseBtn = this.page.locator('div[class*="PopupLayout_closeIcon_"]');
+        this.errorPopupOkBtn = this.page.locator('button', { hasText: "Зрозуміло" });
+        this.errorPopupContent = this.page.getByTestId('errorPopup');
+        this.imageUploadClueText = this.page.locator("div[class*='ImagesUnitFlow_descr_']");
+        this.imageUploadTitle = this.page.locator("div[class*='ImagesUnitFlow_paragraph_']");
     }
 
     async clickNextBtn() {
@@ -102,6 +119,68 @@ export default class UnitCreationPage extends BasePage {
         expect(dialog.message()).toContain('Ви впевнені, що хочете перейти на іншу сторінку? Внесені дані не збережуться!');
         await dialog.accept();
         expect(this.page).toHaveURL("/owner-units-page/");
+    }
+    async getImageBlockByIndex(index: number) {
+        const imageBlock = this.imageBlock.nth(index);
+        return imageBlock;
+    }
+    async uploadImagesToBlock(blockIndex: number, imageFiles: string[]) {
+        const [fileChooser] = await Promise.all([
+            this.page.waitForEvent('filechooser'),
+            (await this.getImageBlockByIndex(blockIndex)).click()
+        ]);
+        const filePaths = imageFiles.map(image => path.join(process.cwd(), 'data', 'files', 'images', image));
+        await fileChooser.setFiles(filePaths);
+    }
+    async deleteImageFromBlock(blockIndex: number) {
+        const imageBlock = await this.getImageBlockByIndex(blockIndex);
+        await imageBlock.hover();
+        const deleteIcon = imageBlock.getByTestId('deleteImage');
+        await deleteIcon.click();
+    }
+    async assertErrorPopupVisible() {
+        expect(this.errorPopup).toBeVisible();
+    }
+    async assertErrorPopupNotVisible() {
+        expect(this.errorPopup).not.toBeVisible();
+    }
+    async assertErrorPopupContent(text: string) {
+        expect(this.errorPopupContent).toHaveText(text);
+    }
+    async assertErrorPopupTitle(text: string) {
+        expect(this.errorPopupTitle).toHaveText(text);
+    }
+    async clickErrorPopupOkBtn() {
+        await this.errorPopupOkBtn.click();
+    }
+    async clickErrorPopupCloseBtn() {
+        await this.errorPopupCloseBtn.click();
+    }
+    async dragAndDropImage (dragIndex: number, dropIndex: number) {
+        const dragBlock = await this.getImageBlockByIndex(dragIndex);
+        const dropBlock = await this.getImageBlockByIndex(dropIndex);
+
+        await dragBlock.dragTo(dropBlock);
+    }
+    async getImageBlockSource(blockIndex: number) {
+        const imageBlock = await this.getImageBlockByIndex(blockIndex);
+
+        const imageSrc = await imageBlock.locator('img').getAttribute('src');
+        expect(imageSrc).not.toBe('');
+
+        return imageSrc;
+    }
+    async verifyMainImageLabelVisible() {
+        const firstImageBlock = await this.getImageBlockByIndex(0);
+        const mainImageLabel = firstImageBlock.locator("[data-testid='mainImageLabel']");
+
+        expect(mainImageLabel).toHaveText("Головне");
+    }
+    async verifyImageInBlock(blockIndex: number, imgSource: string | null) {
+        const imageBlock = await this.getImageBlockByIndex(blockIndex);
+
+        const imageInBlock = await imageBlock.locator('img').getAttribute('src');
+        expect(imageInBlock).toBe(imgSource);
     }
     async getTabTitleByNumber(number: number) {
         return this.tabTitle.nth(number);
@@ -219,6 +298,9 @@ export default class UnitCreationPage extends BasePage {
     async assertMapSelectionPlaceholderVisible() {
         expect(this.selectedLocationLabel).toHaveText("Виберіть на мапі");
     }
+    async assertImageUploadTitle() {
+        expect(this.imageUploadTitle).toHaveText("Фото технічного засобу *");
+    }
     async assertManufacturerSearhDropdownVisible() {
         expect(this.manufacturerSearchDropdown).toBeVisible();
     }
@@ -285,11 +367,24 @@ export default class UnitCreationPage extends BasePage {
     async assertManufacturerNotFound(manufacturer: string) {
         expect(this.manufacturerNotFoundMsg).toHaveText(`На жаль, виробника “${manufacturer}“ не знайдено в нашій базі.` + " Щоб додати виробника - зв`яжіться із службою підтримки");
     }
+    async assertImageUploadClueText() {
+        expect(this.imageUploadClueText).toHaveText("Додайте в оголошення від 1 до 12 фото технічного засобу розміром до 20 МВ у форматі .jpg, .jpeg, .png. Перше фото буде основним.");
+    }
+    async assertImageUploadClueErrorState() {
+        expect(this.imageUploadClueText).toHaveCSS('color', "rgb(247, 56, 89)");
+    }
+    async assertTotalNumberOfImageBlocks(number: number) {
+        const imageBlocks = await this.imageBlock.all();
+        expect(imageBlocks).toHaveLength(number);
+    }
     async assertMapPopupTitle() {
         expect(this.mapPopupTitle).toHaveText("Техніка на мапі");
     }
     async assertCancelBtnText() {
         expect(this.prevBtn).toHaveText("Скасувати");
+    }
+    async assertPrevBtnText() {
+        expect(this.prevBtn).toHaveText("Назад");
     }
     async assertNextBtnText() {
         expect(this.nextBtn).toHaveText("Далі");

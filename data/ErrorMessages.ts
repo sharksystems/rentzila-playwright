@@ -12,5 +12,9 @@ export enum ErrorMessages {
     listingTitleTooShort = "У назві оголошення повинно бути не менше 10 символів",
     listingTitleTooLong = "У назві оголошення може бути не більше 100 символів",
     modelNameTooLong = "У назві моделі може бути не більше 15 символів",
-    locationNotSelected = "Виберіть коректне місце на мапі України"
+    locationNotSelected = "Виберіть коректне місце на мапі України",
+
+    imageInvalid = "Невалідне фото",
+    fileDuplicate = "Ви не можете завантажити двічі один файл.",
+    imageFormatInvalid = "Формат зображення не підтримується. Допустимі формати: .jpg, .jpeg, .png. Ви не можете завантажити файл більше 20 МВ.",
 }
