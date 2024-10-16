@@ -32,8 +32,8 @@ test.describe('Unit creation tests', async () => {
         await unitCreationPage.assertCategorySelectErrorWithMsg(ErrorMessages.fieldRequired);
 
         await unitCreationPage.clickCategorySelection();
-        (await unitCreationPage.getFirstCategoryByNumber(0)).click();
-        (await unitCreationPage.getSecondCategoryByNumber(1)).click();
+        await unitCreationPage.getFirstCategoryByIndex(0).click();
+        await unitCreationPage.getSecondCategoryByIndex(1).click();
         await unitCreationPage.selectThirdCateogryAndVerify(3);
     });
 
@@ -164,8 +164,8 @@ test.describe('Unit creation tests', async () => {
         await unitCreationPage.assertMapSelectionErrorWithMsg(ErrorMessages.locationNotSelected);
 
         await unitCreationPage.clickCategorySelection();
-        (await unitCreationPage.getFirstCategoryByNumber(0)).click();
-        (await unitCreationPage.getSecondCategoryByNumber(1)).click();
+        await unitCreationPage.getFirstCategoryByIndex(0).click();
+        await unitCreationPage.getSecondCategoryByIndex(1).click();
         await unitCreationPage.selectThirdCateogryAndVerify(4);
 
         await unitCreationPage.enterListingTitle(randomData.generate10Symbols());
@@ -181,7 +181,7 @@ test.describe('Unit creation tests', async () => {
     });
 
     test('C384 - Verify uploading the same image', async ({ unitCreationPage }) => {
-        (await unitCreationPage.getTabTitleByNumber(1)).click();
+        await unitCreationPage.getTabTitleByIndex(1).click();
         await unitCreationPage.uploadImagesToBlock(0, ["valid_jpeg.jpeg"]);
         await unitCreationPage.getImageBlockSource(0);
         await unitCreationPage.verifyMainImageLabelVisible();
@@ -207,7 +207,7 @@ test.describe('Unit creation tests', async () => {
     });
 
     test('C401 - Verify uploading invalid file type', async ({ unitCreationPage }) => {
-        (await unitCreationPage.getTabTitleByNumber(1)).click();
+        await unitCreationPage.getTabTitleByIndex(1).click();
         await unitCreationPage.uploadImagesToBlock(0, ["webp_image.webp"]);
         await unitCreationPage.assertErrorPopupVisible();
         await unitCreationPage.assertErrorPopupTitle(ErrorMessages.imageInvalid);
@@ -230,7 +230,7 @@ test.describe('Unit creation tests', async () => {
     });
 
     test('C405 - Verify uploading image of size more than 20MB', async ({ unitCreationPage }) => {
-        (await unitCreationPage.getTabTitleByNumber(1)).click();
+        await unitCreationPage.getTabTitleByIndex(1).click();
         await unitCreationPage.uploadImagesToBlock(0, ["image_over_20mb.png"]);
         await unitCreationPage.assertErrorPopupVisible();
         await unitCreationPage.assertErrorPopupTitle(ErrorMessages.imageInvalid);
@@ -253,7 +253,7 @@ test.describe('Unit creation tests', async () => {
     });
 
     test('C390 - Verify "Назад" button (2. Photo Tab)', async ({ unitCreationPage }) => {
-        (await unitCreationPage.getTabTitleByNumber(1)).click();
+        await unitCreationPage.getTabTitleByIndex(1).click();
         await unitCreationPage.assertPrevBtnText();
         await unitCreationPage.clickPrevBtn();
 
@@ -267,7 +267,7 @@ test.describe('Unit creation tests', async () => {
     });
 
     test('C393 - Verify "Далі" button (2. Photo Tab)', async ({ unitCreationPage }) => {
-        (await unitCreationPage.getTabTitleByNumber(1)).click();
+        await unitCreationPage.getTabTitleByIndex(1).click();
         await unitCreationPage.assertImageUploadTitle();
         await unitCreationPage.assertImageUploadClueText();
         await unitCreationPage.clickNextBtn();
@@ -280,7 +280,7 @@ test.describe('Unit creation tests', async () => {
     });
 
     test('C593 - Verify image upload', async ({ unitCreationPage }) => {
-        (await unitCreationPage.getTabTitleByNumber(1)).click();
+        await unitCreationPage.getTabTitleByIndex(1).click();
         await unitCreationPage.assertImageUploadTitle();
         await unitCreationPage.assertImageUploadClueText();
         
@@ -296,7 +296,7 @@ test.describe('Unit creation tests', async () => {
     });
 
     test('C594 - Verify image drag & drop', async ({ unitCreationPage }) => {
-        (await unitCreationPage.getTabTitleByNumber(1)).click();
+        await unitCreationPage.getTabTitleByIndex(1).click();
         await unitCreationPage.uploadImagesToBlock(0, ["valid_jpeg.jpeg", "valid_jpeg2.jpeg"]);
         let firstBlockImage = await unitCreationPage.getImageBlockSource(0);
         let secondBlockImage = await unitCreationPage.getImageBlockSource(1);
@@ -307,7 +307,7 @@ test.describe('Unit creation tests', async () => {
     });
 
     test('C595 - Verify image deleting', async ({ unitCreationPage }) => {
-        (await unitCreationPage.getTabTitleByNumber(1)).click();
+        await unitCreationPage.getTabTitleByIndex(1).click();
         await unitCreationPage.uploadImagesToBlock(0, ["valid_jpeg.jpeg"]);
         await unitCreationPage.getImageBlockSource(0);
         await unitCreationPage.deleteImageFromBlock(0);

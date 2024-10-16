@@ -120,20 +120,19 @@ export default class UnitCreationPage extends BasePage {
         await dialog.accept();
         expect(this.page).toHaveURL("/owner-units-page/");
     }
-    async getImageBlockByIndex(index: number) {
-        const imageBlock = this.imageBlock.nth(index);
-        return imageBlock;
+    getImageBlockByIndex(index: number) {
+        return this.imageBlock.nth(index);
     }
     async uploadImagesToBlock(blockIndex: number, imageFiles: string[]) {
         const [fileChooser] = await Promise.all([
             this.page.waitForEvent('filechooser'),
-            (await this.getImageBlockByIndex(blockIndex)).click()
+            (this.getImageBlockByIndex(blockIndex)).click()
         ]);
         const filePaths = imageFiles.map(image => path.join(process.cwd(), 'data', 'files', 'images', image));
         await fileChooser.setFiles(filePaths);
     }
     async deleteImageFromBlock(blockIndex: number) {
-        const imageBlock = await this.getImageBlockByIndex(blockIndex);
+        const imageBlock = this.getImageBlockByIndex(blockIndex);
         await imageBlock.hover();
         const deleteIcon = imageBlock.getByTestId('deleteImage');
         await deleteIcon.click();
@@ -157,13 +156,13 @@ export default class UnitCreationPage extends BasePage {
         await this.errorPopupCloseBtn.click();
     }
     async dragAndDropImage (dragIndex: number, dropIndex: number) {
-        const dragBlock = await this.getImageBlockByIndex(dragIndex);
-        const dropBlock = await this.getImageBlockByIndex(dropIndex);
+        const dragBlock = this.getImageBlockByIndex(dragIndex);
+        const dropBlock = this.getImageBlockByIndex(dropIndex);
 
         await dragBlock.dragTo(dropBlock);
     }
     async getImageBlockSource(blockIndex: number) {
-        const imageBlock = await this.getImageBlockByIndex(blockIndex);
+        const imageBlock = this.getImageBlockByIndex(blockIndex);
 
         const imageSrc = await imageBlock.locator('img').getAttribute('src');
         expect(imageSrc).not.toBe('');
@@ -171,28 +170,28 @@ export default class UnitCreationPage extends BasePage {
         return imageSrc;
     }
     async verifyMainImageLabelVisible() {
-        const firstImageBlock = await this.getImageBlockByIndex(0);
+        const firstImageBlock = this.getImageBlockByIndex(0);
         const mainImageLabel = firstImageBlock.locator("[data-testid='mainImageLabel']");
 
         expect(mainImageLabel).toHaveText("Головне");
     }
     async verifyImageInBlock(blockIndex: number, imgSource: string | null) {
-        const imageBlock = await this.getImageBlockByIndex(blockIndex);
+        const imageBlock = this.getImageBlockByIndex(blockIndex);
 
         const imageInBlock = await imageBlock.locator('img').getAttribute('src');
         expect(imageInBlock).toBe(imgSource);
     }
-    async getTabTitleByNumber(number: number) {
-        return this.tabTitle.nth(number);
+    getTabTitleByIndex(index: number) {
+        return this.tabTitle.nth(index);
     }
-    async getFirstCategoryByNumber(number: number) {
-        return this.firstCategory.nth(number);
+    getFirstCategoryByIndex(index: number) {
+        return this.firstCategory.nth(index);
     }
-    async getSecondCategoryByNumber(number: number) {
-        return this.secondCategory.nth(number);
+    getSecondCategoryByIndex(index: number) {
+        return this.secondCategory.nth(index);
     }
-    async getThirdCategoryByNumber(number: number) {
-        return this.thirdCategory.nth(number);
+    getThirdCategoryByIndex(index: number) {
+        return this.thirdCategory.nth(index);
     }
     async clickCategorySelection() {
         await this.categorySelection.click();
@@ -207,9 +206,9 @@ export default class UnitCreationPage extends BasePage {
     async clickMapPopupCloseBtn() {
         await this.mapCloseIcon.click();
     }
-    async selectThirdCateogryAndVerify(number: number) {
-        let thirdCategoryText: string = await (await this.getThirdCategoryByNumber(number)).innerText();
-        await (await this.getThirdCategoryByNumber(number)).click();
+    async selectThirdCateogryAndVerify(index: number) {
+        let thirdCategoryText: string = await this.getThirdCategoryByIndex(index).innerText();
+        await this.getThirdCategoryByIndex(index).click();
         expect(this.categorySelection).toHaveText(thirdCategoryText.toLowerCase());
     }
     async clickOutsidePopup() {
@@ -406,18 +405,18 @@ export default class UnitCreationPage extends BasePage {
     async verifySelectedTabIsHighlighted(tabNumber: number) {
         for (let i = 0; i < 4; i++) {
             if (i == tabNumber) {
-                expect(await (this.getTabTitleByNumber(i))).toHaveAttribute('aria-selected', 'true');
+                expect(this.getTabTitleByIndex(i)).toHaveAttribute('aria-selected', 'true');
             }
             else {
-                expect(await (this.getTabTitleByNumber(i))).toHaveAttribute('aria-selected', 'false');
+                expect(this.getTabTitleByIndex(i)).toHaveAttribute('aria-selected', 'false');
             }
         }
     }
     async verifyTabsText() {
-        expect(await (this.getTabTitleByNumber(0))).toHaveText("1Основна інформація");
-        expect(await (this.getTabTitleByNumber(1))).toHaveText("2Фотографії");
-        expect(await (this.getTabTitleByNumber(2))).toHaveText("3Послуги");
-        expect(await (this.getTabTitleByNumber(3))).toHaveText("4Вартість");
-        expect(await (this.getTabTitleByNumber(4))).toHaveText("5Контакти");
+        expect(this.getTabTitleByIndex(0)).toHaveText("1Основна інформація");
+        expect(this.getTabTitleByIndex(1)).toHaveText("2Фотографії");
+        expect(this.getTabTitleByIndex(2)).toHaveText("3Послуги");
+        expect(this.getTabTitleByIndex(3)).toHaveText("4Вартість");
+        expect(this.getTabTitleByIndex(4)).toHaveText("5Контакти");
     }
 }
