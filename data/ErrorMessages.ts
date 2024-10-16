@@ -6,5 +6,11 @@ export enum ErrorMessages {
     wrongEmailOrPassword = "Невірний e-mail або пароль",
     wrongPhoneOrPassword = "Невірний номер телефону або пароль",
     emailOrPhoneInvalidFormat = "Неправильний формат email або номера телефону",
-    passwordInvalidFormat = "Пароль повинен містити як мінімум 1 цифру, 1 велику літеру і 1 малу літеру, також не повинен містити кирилицю та пробіли"
+    passwordInvalidFormat = "Пароль повинен містити як мінімум 1 цифру, 1 велику літеру і 1 малу літеру, також не повинен містити кирилицю та пробіли",
+
+    fieldRequired = "Це поле обов’язкове",
+    listingTitleTooShort = "У назві оголошення повинно бути не менше 10 символів",
+    listingTitleTooLong = "У назві оголошення може бути не більше 100 символів",
+    modelNameTooLong = "У назві моделі може бути не більше 15 символів",
+    locationNotSelected = "Виберіть коректне місце на мапі України"
 }
