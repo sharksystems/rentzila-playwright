@@ -1,3 +1,4 @@
+import * as path from 'path';
 import BasePage from './BasePage';
 import { expect, Locator, Page } from '@playwright/test';
 
@@ -43,6 +44,14 @@ export default class UnitCreationPage extends BasePage {
     private readonly mapCloseIcon: Locator;
     private readonly mapSelectedLocation: Locator;
     private readonly mapConfirmSelectionBtn: Locator;
+    private readonly imageBlock: Locator;
+    private readonly errorPopup: Locator;
+    private readonly errorPopupTitle: Locator;
+    private readonly errorPopupCloseBtn: Locator;
+    private readonly errorPopupOkBtn: Locator;
+    private readonly errorPopupContent: Locator;
+    private readonly imageUploadClueText: Locator;
+    private readonly imageUploadTitle: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -87,6 +96,14 @@ export default class UnitCreationPage extends BasePage {
         this.mapCloseIcon = this.page.locator("span[class*='MapPopup_icon_']");
         this.mapSelectedLocation = this.page.getByTestId('address');
         this.mapConfirmSelectionBtn = this.page.locator("button[class*='ItemButtons_darkBlueBtn_']");
+        this.imageBlock = this.page.getByTestId('imageBlock');
+        this.errorPopup = this.page.locator('div[class*="PopupLayout_content_"]');
+        this.errorPopupTitle = this.page.locator('div[class*="PopupLayout_label_"]');
+        this.errorPopupCloseBtn = this.page.locator('div[class*="PopupLayout_closeIcon_"]');
+        this.errorPopupOkBtn = this.page.locator('button', { hasText: "Зрозуміло" });
+        this.errorPopupContent = this.page.getByTestId('errorPopup');
+        this.imageUploadClueText = this.page.locator("div[class*='ImagesUnitFlow_descr_']");
+        this.imageUploadTitle = this.page.locator("div[class*='ImagesUnitFlow_paragraph_']");
     }
 
     async clickNextBtn() {
@@ -103,17 +120,78 @@ export default class UnitCreationPage extends BasePage {
         await dialog.accept();
         expect(this.page).toHaveURL("/owner-units-page/");
     }
-    async getTabTitleByNumber(number: number) {
-        return this.tabTitle.nth(number);
+    getImageBlockByIndex(index: number) {
+        return this.imageBlock.nth(index);
     }
-    async getFirstCategoryByNumber(number: number) {
-        return this.firstCategory.nth(number);
+    async uploadImagesToBlock(blockIndex: number, imageFiles: string[]) {
+        const [fileChooser] = await Promise.all([
+            this.page.waitForEvent('filechooser'),
+            (this.getImageBlockByIndex(blockIndex)).click()
+        ]);
+        const filePaths = imageFiles.map(image => path.join(process.cwd(), 'data', 'files', 'images', image));
+        await fileChooser.setFiles(filePaths);
     }
-    async getSecondCategoryByNumber(number: number) {
-        return this.secondCategory.nth(number);
+    async deleteImageFromBlock(blockIndex: number) {
+        const imageBlock = this.getImageBlockByIndex(blockIndex);
+        await imageBlock.hover();
+        const deleteIcon = imageBlock.getByTestId('deleteImage');
+        await deleteIcon.click();
     }
-    async getThirdCategoryByNumber(number: number) {
-        return this.thirdCategory.nth(number);
+    async assertErrorPopupVisible() {
+        expect(this.errorPopup).toBeVisible();
+    }
+    async assertErrorPopupNotVisible() {
+        expect(this.errorPopup).not.toBeVisible();
+    }
+    async assertErrorPopupContent(text: string) {
+        expect(this.errorPopupContent).toHaveText(text);
+    }
+    async assertErrorPopupTitle(text: string) {
+        expect(this.errorPopupTitle).toHaveText(text);
+    }
+    async clickErrorPopupOkBtn() {
+        await this.errorPopupOkBtn.click();
+    }
+    async clickErrorPopupCloseBtn() {
+        await this.errorPopupCloseBtn.click();
+    }
+    async dragAndDropImage (dragIndex: number, dropIndex: number) {
+        const dragBlock = this.getImageBlockByIndex(dragIndex);
+        const dropBlock = this.getImageBlockByIndex(dropIndex);
+
+        await dragBlock.dragTo(dropBlock);
+    }
+    async getImageBlockSource(blockIndex: number) {
+        const imageBlock = this.getImageBlockByIndex(blockIndex);
+
+        const imageSrc = await imageBlock.locator('img').getAttribute('src');
+        expect(imageSrc).not.toBe('');
+
+        return imageSrc;
+    }
+    async verifyMainImageLabelVisible() {
+        const firstImageBlock = this.getImageBlockByIndex(0);
+        const mainImageLabel = firstImageBlock.locator("[data-testid='mainImageLabel']");
+
+        expect(mainImageLabel).toHaveText("Головне");
+    }
+    async verifyImageInBlock(blockIndex: number, imgSource: string | null) {
+        const imageBlock = this.getImageBlockByIndex(blockIndex);
+
+        const imageInBlock = await imageBlock.locator('img').getAttribute('src');
+        expect(imageInBlock).toBe(imgSource);
+    }
+    getTabTitleByIndex(index: number) {
+        return this.tabTitle.nth(index);
+    }
+    getFirstCategoryByIndex(index: number) {
+        return this.firstCategory.nth(index);
+    }
+    getSecondCategoryByIndex(index: number) {
+        return this.secondCategory.nth(index);
+    }
+    getThirdCategoryByIndex(index: number) {
+        return this.thirdCategory.nth(index);
     }
     async clickCategorySelection() {
         await this.categorySelection.click();
@@ -128,9 +206,9 @@ export default class UnitCreationPage extends BasePage {
     async clickMapPopupCloseBtn() {
         await this.mapCloseIcon.click();
     }
-    async selectThirdCateogryAndVerify(number: number) {
-        let thirdCategoryText: string = await (await this.getThirdCategoryByNumber(number)).innerText();
-        await (await this.getThirdCategoryByNumber(number)).click();
+    async selectThirdCateogryAndVerify(index: number) {
+        let thirdCategoryText: string = await this.getThirdCategoryByIndex(index).innerText();
+        await this.getThirdCategoryByIndex(index).click();
         expect(this.categorySelection).toHaveText(thirdCategoryText.toLowerCase());
     }
     async clickOutsidePopup() {
@@ -219,6 +297,9 @@ export default class UnitCreationPage extends BasePage {
     async assertMapSelectionPlaceholderVisible() {
         expect(this.selectedLocationLabel).toHaveText("Виберіть на мапі");
     }
+    async assertImageUploadTitle() {
+        expect(this.imageUploadTitle).toHaveText("Фото технічного засобу *");
+    }
     async assertManufacturerSearhDropdownVisible() {
         expect(this.manufacturerSearchDropdown).toBeVisible();
     }
@@ -285,11 +366,24 @@ export default class UnitCreationPage extends BasePage {
     async assertManufacturerNotFound(manufacturer: string) {
         expect(this.manufacturerNotFoundMsg).toHaveText(`На жаль, виробника “${manufacturer}“ не знайдено в нашій базі.` + " Щоб додати виробника - зв`яжіться із службою підтримки");
     }
+    async assertImageUploadClueText() {
+        expect(this.imageUploadClueText).toHaveText("Додайте в оголошення від 1 до 12 фото технічного засобу розміром до 20 МВ у форматі .jpg, .jpeg, .png. Перше фото буде основним.");
+    }
+    async assertImageUploadClueErrorState() {
+        expect(this.imageUploadClueText).toHaveCSS('color', "rgb(247, 56, 89)");
+    }
+    async assertTotalNumberOfImageBlocks(number: number) {
+        const imageBlocks = await this.imageBlock.all();
+        expect(imageBlocks).toHaveLength(number);
+    }
     async assertMapPopupTitle() {
         expect(this.mapPopupTitle).toHaveText("Техніка на мапі");
     }
     async assertCancelBtnText() {
         expect(this.prevBtn).toHaveText("Скасувати");
+    }
+    async assertPrevBtnText() {
+        expect(this.prevBtn).toHaveText("Назад");
     }
     async assertNextBtnText() {
         expect(this.nextBtn).toHaveText("Далі");
@@ -311,18 +405,18 @@ export default class UnitCreationPage extends BasePage {
     async verifySelectedTabIsHighlighted(tabNumber: number) {
         for (let i = 0; i < 4; i++) {
             if (i == tabNumber) {
-                expect(await (this.getTabTitleByNumber(i))).toHaveAttribute('aria-selected', 'true');
+                expect(this.getTabTitleByIndex(i)).toHaveAttribute('aria-selected', 'true');
             }
             else {
-                expect(await (this.getTabTitleByNumber(i))).toHaveAttribute('aria-selected', 'false');
+                expect(this.getTabTitleByIndex(i)).toHaveAttribute('aria-selected', 'false');
             }
         }
     }
     async verifyTabsText() {
-        expect(await (this.getTabTitleByNumber(0))).toHaveText("1Основна інформація");
-        expect(await (this.getTabTitleByNumber(1))).toHaveText("2Фотографії");
-        expect(await (this.getTabTitleByNumber(2))).toHaveText("3Послуги");
-        expect(await (this.getTabTitleByNumber(3))).toHaveText("4Вартість");
-        expect(await (this.getTabTitleByNumber(4))).toHaveText("5Контакти");
+        expect(this.getTabTitleByIndex(0)).toHaveText("1Основна інформація");
+        expect(this.getTabTitleByIndex(1)).toHaveText("2Фотографії");
+        expect(this.getTabTitleByIndex(2)).toHaveText("3Послуги");
+        expect(this.getTabTitleByIndex(3)).toHaveText("4Вартість");
+        expect(this.getTabTitleByIndex(4)).toHaveText("5Контакти");
     }
 }

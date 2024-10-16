@@ -69,20 +69,20 @@ export default class HomePage extends BasePage {
         await dialog.accept();
     }
 
-    async getServicesTabByNumber(number: number) {
-        const servicesTab = this.servicesTabs.nth(number)
+    getServicesTabByIndex(index: number) {
+        const servicesTab = this.servicesTabs.nth(index);
         return servicesTab
     }
-    async getServiceByNumber(number: number) {
-        const service = this.serviceItems.nth(number)
+    getServiceByIndex(index: number) {
+        const service = this.serviceItems.nth(index);
         return service
     }
-    async getEquipmentTabByNumber(number: number) {
-        const equipmentTab = this.equipmentTabs.nth(number)
+    getEquipmentTabByIndex(index: number) {
+        const equipmentTab = this.equipmentTabs.nth(index);
         return equipmentTab
     }
-    async getEquipmentItemByNumber(number: number) {
-        const equipmentItem = this.equipmentItems.nth(number)
+    getEquipmentItemByIndex(index: number) {
+        const equipmentItem = this.equipmentItems.nth(index);
         return equipmentItem
     }
     async assertNumberOfServices(number: number = 7) {

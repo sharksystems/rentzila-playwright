@@ -6,19 +6,19 @@ import HeaderElements from '../page_elements/headerElements';
 export async function verifyServicesInTab(headerElements: HeaderElements, homePage: HomePage, unitListingsPage: UnitListingsPage, singleUnitPage: SingleUnitPage, tabNumber: number) {
 
     for (let i = 0; i < 7; i++) {
-        await (await homePage.getServicesTabByNumber(tabNumber)).click();
+        await homePage.getServicesTabByIndex(tabNumber).click();
         await homePage.assertNumberOfServices();
 
-        let serviceCategory: string = await (await homePage.getServiceByNumber(i)).innerText();
-        await (await homePage.getServiceByNumber(i)).click();
+        let serviceCategory: string = await homePage.getServiceByIndex(i).innerText();
+        await homePage.getServiceByIndex(i).click();
         let visible: boolean = await unitListingsPage.verifyCheckboxVisible(serviceCategory);
 
         if (!visible) {
             console.warn(`Service "${serviceCategory}" checkbox not found. Retrying...`);
 
             await headerElements.clickSiteLogo();
-            await (await homePage.getServicesTabByNumber(tabNumber)).click();
-            await (await homePage.getServiceByNumber(i)).click();
+            await homePage.getServicesTabByIndex(tabNumber).click();
+            await homePage.getServiceByIndex(i).click();
             await unitListingsPage.assertFilterSelectedWithName(serviceCategory);
             await unitListingsPage.verifyCheckboxChecked(serviceCategory);
             await unitListingsPage.clickProductListing();
@@ -38,12 +38,12 @@ export async function verifyServicesInTab(headerElements: HeaderElements, homePa
 export async function verifyEquipmentInTab(headerElements: HeaderElements, homePage: HomePage, unitListingsPage: UnitListingsPage, singleUnitPage: SingleUnitPage, tabNumber: number) {
 
     for (let i = 0; i < 7; i++) {
-        await (await homePage.getEquipmentTabByNumber(tabNumber)).click();
+        await homePage.getEquipmentTabByIndex(tabNumber).click();
         await homePage.assertNumberOfEquipment();
-        let mainCategory: string = await (await homePage.getEquipmentTabByNumber(tabNumber)).innerText();
+        let mainCategory: string = await homePage.getEquipmentTabByIndex(tabNumber).innerText();
 
-        let equipmentCategory: string = await (await homePage.getEquipmentItemByNumber(i)).innerText();
-        await (await homePage.getEquipmentItemByNumber(i)).click();
+        let equipmentCategory: string = await homePage.getEquipmentItemByIndex(i).innerText();
+        await homePage.getEquipmentItemByIndex(i).click();
         await unitListingsPage.assertFilterSelectedWithName(equipmentCategory);
         await unitListingsPage.verifyEquipmentCategoryisSelected(mainCategory, equipmentCategory);
         await unitListingsPage.clickProductListing();
