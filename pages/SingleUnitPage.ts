@@ -14,6 +14,7 @@ export default class SingleUnitPage extends BasePage {
         const serviceTag = this.page.locator("div[class*='UnitCharacteristics_service_']", { hasText: service });
         await expect(serviceTag).toBeVisible();
     }
+    
     async assertEqupmentCategoryVisible(category: string) {
         const expectedText = categoryMap[category] || category;
         await expect(this.categoryNameBreadcrumb).toHaveText(expectedText);
