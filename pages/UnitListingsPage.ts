@@ -23,16 +23,19 @@ export default class UnitListingsPage extends BasePage {
     async assertUserIsOnUnitListingsPage() {
         await this.assertURLContains("/products");
     }
+
     async assertFilterSelectedWithName(category: string) {
         const expectedText = categoryMap[category] || category;
         await expect(this.selectedFilter).toHaveText(expectedText);
     }
+
     async verifyCheckboxVisible(category: string) {
         await this.page.waitForLoadState("domcontentloaded");
         const checkboxLabel = this.page.locator('label', { hasText: category });
         const labelVisible = await checkboxLabel.isVisible();
         return labelVisible;
     }
+
     async verifyCheckboxChecked(category: string) {
         const checkboxLabel = this.page.locator('label', { hasText: category });
 
@@ -42,6 +45,7 @@ export default class UnitListingsPage extends BasePage {
         const isChecked = await checkboxLocator.isChecked();
         expect(isChecked).toBe(true);
     }
+
     async verifyEquipmentCategoryisSelected(mainCategory: string, category: string) {
         await this.page.waitForLoadState("domcontentloaded");
 
@@ -58,6 +62,7 @@ export default class UnitListingsPage extends BasePage {
             await expect(this.selectedEquipmentSecondCategory).toHaveText(expectedText);
         }
     }
+    
     async clickProductListing() {
         await this.productListing.waitFor();
         await this.page.waitForTimeout(700);
