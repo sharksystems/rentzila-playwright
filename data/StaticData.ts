@@ -9,7 +9,7 @@ export enum StaticData {
     validManufacturerLowercase = "Атэк",
     defaultAddress = "Київ, вулиця Володимирська 21/20 Україна, Київська область",
     serviceDigging = "Риття ям",
-    serviceBoring = "Буріння стіг",
+    serviceBoring = "Буріння",
 
     validPrice = "123456789",
     validPrice2 = "1234",

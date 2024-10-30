@@ -1,7 +1,6 @@
 import { ErrorMessages } from '../data/ErrorMessages';
 import { StaticData } from '../data/StaticData';
 import { test } from '../fixtures';
-import UnitCreationPage from '../pages/UnitCreationPage';
 
 test.describe('Unit creation tests', async () => {
     test.beforeEach(async ({ homePage, headerElements, loginPopup, loginData, myUnitsPage }) => {
@@ -312,17 +311,135 @@ test.describe('Unit creation tests', async () => {
         await unitCreationPage.verifyImageInBlock(0, '');
     });
 
+    test('C410 - Verify creating new service', async ({ unitCreationPage, randomData, apiHelper }) => {
+        await unitCreationPage.getTabTitleByIndex(2).click();
+        await unitCreationPage.enterService(randomData.getRandomName);
+        await unitCreationPage.verifyServiceNotFoundMsg(randomData.getRandomName);
+        await unitCreationPage.verifyCreateNewServiceBtnContent();
+        await unitCreationPage.clickCreateNewServiceBtn();
+        await unitCreationPage.assertSelectedServiceVisibility(randomData.getRandomName);
+
+        let accessToken = await apiHelper.createAdminAccessToken();
+        let userCategory = await apiHelper.getUserGeneratedCategory(accessToken, randomData.getRandomName);
+        await apiHelper.deleteUserSubmittedCategory(accessToken, userCategory.id);
+    });
+
+    test('C411 - Verify choosing multiple services', async ({ unitCreationPage }) => {
+        await unitCreationPage.getTabTitleByIndex(2).click();
+        await unitCreationPage.enterService("Г");
+        await unitCreationPage.verifyServiceSearchResultsContainTerm("Г");
+
+        const firstResult = await unitCreationPage.getServiceSearchResultByIndex(0).innerText();
+        const secondResult = await unitCreationPage.getServiceSearchResultByIndex(1).innerText();
+
+        await unitCreationPage.getServiceSearchResultByIndex(0).click();
+        await unitCreationPage.getServiceSearchResultByIndex(1).click();
+
+        await unitCreationPage.assertSelectedServiceVisibility(firstResult);
+        await unitCreationPage.assertSelectedServiceVisibility(secondResult);
+    });
+
+    test('C412 - Verify removing chosen services', async ({ unitCreationPage }) => {
+        await unitCreationPage.getTabTitleByIndex(2).click();
+        await unitCreationPage.enterService(StaticData.serviceDigging);
+        await unitCreationPage.selectServiceContainingText(StaticData.serviceDigging);
+        await unitCreationPage.enterService(StaticData.serviceBoring);
+        await unitCreationPage.selectServiceContainingText(StaticData.serviceBoring);
+
+        await unitCreationPage.assertSelectedServiceVisibility(StaticData.serviceDigging);
+        await unitCreationPage.assertSelectedServiceVisibility(StaticData.serviceBoring);
+        await unitCreationPage.assertSelectedServicesTitleVisibility();
+
+        await unitCreationPage.removeSelectedService(StaticData.serviceDigging);
+        await unitCreationPage.removeSelectedService(StaticData.serviceBoring);
+        await unitCreationPage.assertSelectedServiceVisibility(StaticData.serviceDigging, false);
+        await unitCreationPage.assertSelectedServiceVisibility(StaticData.serviceBoring, false);
+        await unitCreationPage.assertSelectedServicesTitleVisibility(false);
+    });
+
+    test('C413 - Verify "Назад" button (3. Services Tab)', async ({ unitCreationPage }) => {
+        await unitCreationPage.getTabTitleByIndex(1).click();
+        await unitCreationPage.uploadImagesToBlock(0, ["valid_jpeg.jpeg"]);
+        const imageSource = await unitCreationPage.getImageBlockSource(0);
+        await unitCreationPage.clickNextBtn();
+        await unitCreationPage.verifySelectedTabIsHighlighted(2);
+
+        await unitCreationPage.clickPrevBtn();
+        await unitCreationPage.verifySelectedTabIsHighlighted(1);
+        await unitCreationPage.verifyImageInBlock(0, imageSource);
+        await unitCreationPage.verifyMainImageLabelVisible();
+    });
+
     test('C414 - Verify "Далі" button (3. Services Tab)', async ({ unitCreationPage }) => {
         await unitCreationPage.getTabTitleByIndex(2).click();
         await unitCreationPage.clickNextBtn();
         await unitCreationPage.assertServiceSelectionClueErrorState();
+        await unitCreationPage.assertServiceSearchInputErrorState();
 
         await unitCreationPage.enterService(StaticData.serviceDigging);
         await unitCreationPage.selectServiceContainingText(StaticData.serviceDigging);
-        await unitCreationPage.assertSelectedService(StaticData.serviceDigging);
+        await unitCreationPage.assertSelectedServiceVisibility(StaticData.serviceDigging);
+        await unitCreationPage.assertServiceSearchInputErrorState(false);
 
         await unitCreationPage.clickNextBtn();
         await unitCreationPage.verifySelectedTabIsHighlighted(3);
+    });
+
+    test('C632 - Verify entering special characters in the "Послуги" field', async ({ unitCreationPage }) => {
+        await unitCreationPage.getTabTitleByIndex(2).click();
+        await unitCreationPage.enterService(StaticData.specialSymbols);
+        await unitCreationPage.verifyServiceInputValue("");
+        await unitCreationPage.enterService(StaticData.specialSymbols, 'paste');
+        await unitCreationPage.verifyServiceInputValue("");
+
+        await unitCreationPage.enterService(StaticData.serviceBoring + StaticData.specialSymbols);
+        await unitCreationPage.verifyServiceInputValue(StaticData.serviceBoring);
+
+        await unitCreationPage.enterService(StaticData.serviceBoring + StaticData.specialSymbols, 'paste');
+        await unitCreationPage.verifyServiceInputValue(StaticData.serviceBoring);
+    });
+
+    test('C633 - Verify character limit for the "Послуги" field', async ({ unitCreationPage, randomData }) => {
+        await unitCreationPage.getTabTitleByIndex(2).click();
+        await unitCreationPage.enterService("G");
+        await unitCreationPage.verifyServiceSearchResultsContainTerm("G");
+
+        await unitCreationPage.enterService("");
+        await unitCreationPage.verifyServiceInputValue("");
+
+        const moreThan100Symbols = randomData.generate101Symbols();
+        await unitCreationPage.enterService(moreThan100Symbols);
+        await unitCreationPage.verifyServiceInputValueLength(100);
+        await unitCreationPage.verifyNewServiceCharCount("100");
+    });
+
+    test('C634 - Verify service search in uppercase and lowercase ', async ({ unitCreationPage }) => {
+        await unitCreationPage.getTabTitleByIndex(2).click();
+
+        await unitCreationPage.enterService(StaticData.serviceBoring, 'lowercase');
+        await unitCreationPage.verifyServiceSearchResultsContainTerm(StaticData.serviceBoring);
+
+        await unitCreationPage.enterService(StaticData.serviceBoring, 'uppercase');
+        await unitCreationPage.verifyServiceSearchResultsContainTerm(StaticData.serviceBoring);
+    });
+
+    test('C592 - Verify UI of the "Послуги" field', async ({ unitCreationPage }) => {
+        await unitCreationPage.getTabTitleByIndex(2).click();
+        await unitCreationPage.verifyServiceInputTitle();
+        await unitCreationPage.assertServiceSelectionClueText();
+        await unitCreationPage.verifyServiceSearchInputElements();
+
+        await unitCreationPage.enterService(StaticData.serviceBoring);
+        await unitCreationPage.assertStatusIconInServiceSearchResult(StaticData.serviceBoring, 'not selected');
+        await unitCreationPage.selectServiceContainingText(StaticData.serviceBoring);
+        await unitCreationPage.assertStatusIconInServiceSearchResult(StaticData.serviceBoring, 'selected');
+
+        await unitCreationPage.assertSelectedServiceVisibility(StaticData.serviceBoring);
+        await unitCreationPage.assertSelectedServicesTitleVisibility();
+
+        await unitCreationPage.removeSelectedService(StaticData.serviceBoring);
+        await unitCreationPage.assertSelectedServiceVisibility(StaticData.serviceBoring, false);
+        await unitCreationPage.assertSelectedServicesTitleVisibility(false);
     });
 
     test('C417 - Verify "Спосіб оплати" section', async ({ unitCreationPage }) => {
@@ -335,7 +452,7 @@ test.describe('Unit creation tests', async () => {
         await unitCreationPage.getTabTitleByIndex(2).click();
         await unitCreationPage.enterService(StaticData.serviceDigging);
         await unitCreationPage.selectServiceContainingText(StaticData.serviceDigging);
-        await unitCreationPage.assertSelectedService(StaticData.serviceDigging);
+        await unitCreationPage.assertSelectedServiceVisibility(StaticData.serviceDigging);
         await unitCreationPage.clickNextBtn();
 
         await unitCreationPage.verifyMinimumPriceInputTitle();
@@ -366,7 +483,7 @@ test.describe('Unit creation tests', async () => {
         await unitCreationPage.getTabTitleByIndex(2).click();
         await unitCreationPage.enterService(StaticData.serviceDigging);
         await unitCreationPage.selectServiceContainingText(StaticData.serviceDigging);
-        await unitCreationPage.assertSelectedService(StaticData.serviceDigging);
+        await unitCreationPage.assertSelectedServiceVisibility(StaticData.serviceDigging);
         await unitCreationPage.clickNextBtn();
 
         await unitCreationPage.addPriceForService(StaticData.serviceDigging);
@@ -402,19 +519,19 @@ test.describe('Unit creation tests', async () => {
         await unitCreationPage.getTabTitleByIndex(2).click();
         await unitCreationPage.enterService(StaticData.serviceDigging);
         await unitCreationPage.selectServiceContainingText(StaticData.serviceDigging);
-        await unitCreationPage.assertSelectedService(StaticData.serviceDigging);
+        await unitCreationPage.assertSelectedServiceVisibility(StaticData.serviceDigging);
         await unitCreationPage.clickNextBtn();
 
         await unitCreationPage.clickPrevBtn();
         await unitCreationPage.verifySelectedTabIsHighlighted(2);
-        await unitCreationPage.assertSelectedService(StaticData.serviceDigging);
+        await unitCreationPage.assertSelectedServiceVisibility(StaticData.serviceDigging);
     });
 
     test('C489 - Verify "Далі" button (4. Price Tab)', async ({ unitCreationPage }) => {
         await unitCreationPage.getTabTitleByIndex(2).click();
         await unitCreationPage.enterService(StaticData.serviceDigging);
         await unitCreationPage.selectServiceContainingText(StaticData.serviceDigging);
-        await unitCreationPage.assertSelectedService(StaticData.serviceDigging);
+        await unitCreationPage.assertSelectedServiceVisibility(StaticData.serviceDigging);
         await unitCreationPage.clickNextBtn();
 
         await unitCreationPage.addPriceForService(StaticData.serviceDigging);
@@ -450,7 +567,7 @@ test.describe('Unit creation tests', async () => {
         await unitCreationPage.getTabTitleByIndex(2).click();
         await unitCreationPage.enterService(StaticData.serviceDigging);
         await unitCreationPage.selectServiceContainingText(StaticData.serviceDigging);
-        await unitCreationPage.assertSelectedService(StaticData.serviceDigging);
+        await unitCreationPage.assertSelectedServiceVisibility(StaticData.serviceDigging);
         await unitCreationPage.clickNextBtn();
 
         await unitCreationPage.verifyServicesPriceSectionTitle();

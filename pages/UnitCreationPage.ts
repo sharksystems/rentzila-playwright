@@ -56,7 +56,9 @@ export default class UnitCreationPage extends BasePage {
     private readonly serviceInputTitle: Locator;
     private readonly serviceInputClue: Locator;
     private readonly serviceSearchInput: Locator;
+    private readonly serviceSearchInputWrapper: Locator;
     private readonly serviceSearchItem: Locator;
+    private readonly selectedServicesTitle: Locator;
     private readonly selectedService: Locator;
     private readonly serviceRemoveBtn: Locator;
     private readonly minPriceInput: Locator;
@@ -72,6 +74,9 @@ export default class UnitCreationPage extends BasePage {
     private readonly servicesPriceSectionTitle: Locator;
     private readonly servicesPriceSectionClue: Locator;
     private readonly servicesPaymentMethodTitle: Locator;
+    private readonly serviceNotFoundMsg: Locator;
+    private readonly createNewServiceBtn: Locator;
+    private readonly newServiceCharCount: Locator;
 
     constructor(page: Page) {
         super(page);
@@ -129,6 +134,7 @@ export default class UnitCreationPage extends BasePage {
         this.serviceInputClue = this.page.getByTestId('add-info');
         this.serviceSearchInput = this.page.locator("div[class*='ServicesUnitFlow_searchInput_'] input");
         this.serviceSearchItem = this.page.getByTestId('searchItem-servicesUnitFlow');
+        this.selectedServicesTitle = this.page.locator("div[class*='ServicesUnitFlow_paragraph_']").nth(1);
         this.selectedService = this.page.locator("div[class*='ServicesUnitFlow_service_']");
         this.serviceRemoveBtn = this.page.getByTestId('remove-servicesUnitFlow');
         this.minPriceInput = this.page.getByTestId('priceInput_RowUnitPrice').first();
@@ -144,6 +150,10 @@ export default class UnitCreationPage extends BasePage {
         this.servicesPriceSectionTitle = this.page.locator("div[class*='PricesUnitFlow_paragraph_']").nth(2);
         this.servicesPriceSectionClue = this.page.locator("div[class*='PricesUnitFlow_description_']");
         this.servicesPaymentMethodTitle = this.page.locator("div[class*='PricesUnitFlow_paragraph_']").first();
+        this.serviceNotFoundMsg = this.page.getByTestId('p2-notFound-addNewItem');
+        this.createNewServiceBtn = this.page.getByTestId('btn-addNewItem');
+        this.newServiceCharCount = this.page.locator("div[class*='AddNewItem_maxLength_']");
+        this.serviceSearchInputWrapper = this.page.locator("div[class*='ServicesUnitFlow_searchResult_']");
     }
 
     async clickNextBtn() {
@@ -163,19 +173,105 @@ export default class UnitCreationPage extends BasePage {
         expect(this.page).toHaveURL("/owner-units-page/");
     }
 
-    async enterService(service: string, uppercase: boolean = false) {
-        if (uppercase) {
-            const serviceInUppercase = service.toUpperCase();
-            await this.serviceSearchInput.fill(serviceInUppercase);
+    async enterService(service: string, caseOption: 'uppercase' | 'lowercase' | 'paste' | 'default' = 'default') {
+        let formattedService = service;
+
+        if (caseOption == 'uppercase') {
+            formattedService = service.toUpperCase();
+        } else if (caseOption == 'lowercase') {
+            formattedService = service.toLowerCase();
+        } else if (caseOption == 'paste') {
+            await this.page.evaluate(async (text) => {
+                await navigator.clipboard.writeText(text);
+            }, service);
+
+            await this.serviceSearchInput.clear();
+            await this.serviceSearchInput.click();
+            await this.page.keyboard.press(process.platform === 'darwin' ? 'Meta+V' : 'Control+V');
+            return
         }
-        else {
-            await this.serviceSearchInput.fill(service);
+        await this.serviceSearchInput.fill(formattedService);
+    }
+
+    async verifyServiceSearchResultsContainTerm(term: string) {
+        const searchResults = await this.serviceSearchItem.all();
+
+        for (const result of searchResults) {
+            const searchText = await result.innerText();
+            expect(searchText.toLowerCase()).toContain(term.toLowerCase());
         }
     }
 
     async selectServiceContainingText(service: string) {
-        const searchItem = this.serviceSearchItem.locator('div', { hasText: service });
+        const searchItem = this.getServiceSearchResultByName(service);
         await searchItem.click();
+    }
+
+    getServiceSearchResultByName(name: string) {
+        const searchItem = this.serviceSearchItem.locator('div', { hasText: name }).first();
+        return searchItem
+    }
+    
+    getServiceSearchResultByIndex(index: number) {
+        const searchItem = this.serviceSearchItem.nth(index);
+        return searchItem
+    }
+
+    async assertStatusIconInServiceSearchResult(service: string, statusIcon: 'selected' | 'not selected') {
+        const searchItem = this.getServiceSearchResultByName(service);
+        const plusIcon = searchItem.locator("~button svg[viewBox='0 0 14 14']");
+        const checkmarkIcon = searchItem.locator("~ button svg[viewBox='0 0 15 12']");
+
+        if (statusIcon == 'selected') {
+            expect(checkmarkIcon).toBeVisible();
+        } else if (statusIcon == 'not selected') {
+            expect(plusIcon).toBeVisible();
+        }
+    }
+
+    async clickCreateNewServiceBtn() {
+        await this.createNewServiceBtn.click();
+    }
+
+    async verifyCreateNewServiceBtnContent() {
+        const plusIcon = this.createNewServiceBtn.getByTestId("svg-plus-addNewItem");
+        expect(this.createNewServiceBtn).toHaveText("Створити послугу");
+        expect(plusIcon).toBeVisible();
+    }
+
+    async verifyServiceNotFoundMsg(service: string) {
+        expect(this.serviceNotFoundMsg).toHaveText(`На жаль, послугу “${service}“ не знайдено в нашій базі. Ви можете додати послугу в категорію “Користувацькі”:`);
+    }
+
+    async verifyServiceInputValue(value: string) {
+        expect(this.serviceSearchInput).toHaveValue(value);
+    }
+
+    async verifyServiceInputValueLength(length: number) {
+        const inputValue = await this.serviceSearchInput.inputValue();
+        expect(inputValue.length).toEqual(length);
+    }
+
+    async verifyNewServiceCharCount(count: string) {
+        expect(this.newServiceCharCount).toHaveText(`${count} / 100`);
+    }
+
+    async verifyServiceInputTitle() {
+        expect(this.serviceInputTitle).toHaveText("Знайдіть послуги, які надає Ваш технічний засіб *");
+    }
+
+    async verifyServiceSearchInputElements() {
+        const searchIcon = this.serviceSearchInputWrapper.locator("svg[viewBox='0 0 18 18']");
+        expect(searchIcon).toBeVisible();
+        expect(this.serviceSearchInput).toHaveAttribute('placeholder', 'Наприклад: Рихлення грунту, буріння');
+    }
+
+    async assertServiceSearchInputErrorState(error: boolean = true) {
+        if (error) {
+            await expect(this.serviceSearchInputWrapper).toHaveCSS('border', "1px solid rgb(247, 56, 89)");
+        } else if (!error) {
+            await expect(this.serviceSearchInputWrapper).toHaveCSS('border', "1px solid rgb(229, 229, 229)");
+        }
     }
 
     async enterMinimumPrice(price: string) {
@@ -674,13 +770,29 @@ export default class UnitCreationPage extends BasePage {
         expect(imageBlocks).toHaveLength(number);
     }
 
+    async assertServiceSelectionClueText() {
+        expect(this.serviceInputClue).toHaveText("Додайте в оголошення принаймні 1 послугу");
+    }
+
     async assertServiceSelectionClueErrorState() {
         expect(this.serviceInputClue).toHaveCSS('color', "rgb(247, 56, 89)");
     }
 
-    async assertSelectedService(service: string) {
+    async assertSelectedServiceVisibility(service: string, visible: boolean = true) {
         const serviceText = this.selectedService.locator('div', { hasText: service });
-        expect(serviceText).toBeVisible();
+        if (visible) {
+            expect(serviceText).toBeVisible();
+        } else if (!visible) {
+            expect(serviceText).not.toBeVisible();
+        }
+    }
+
+    async assertSelectedServicesTitleVisibility(visible: boolean = true) {
+        if (visible) {
+            expect(this.selectedServicesTitle).toHaveText("Послуги, які надає технічний засіб:");
+        } else if (!visible) {
+            expect(this.selectedServicesTitle).not.toBeVisible();
+        }
     }
 
     async removeSelectedService(service: string) {

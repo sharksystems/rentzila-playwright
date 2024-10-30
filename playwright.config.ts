@@ -12,10 +12,11 @@ export default defineConfig({
   reporter: 'html',
   timeout: 50000,
 
-  use: {  
+  use: {
     baseURL: process.env.BASE_URL || 'BASE_URL',
     actionTimeout: 10000,
     trace: 'on-first-retry',
+    permissions: ['clipboard-read', 'clipboard-write'],
   },
 
   projects: [
