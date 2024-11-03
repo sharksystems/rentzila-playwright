@@ -39,6 +39,31 @@ export class ApiHelper {
         return submission;
     }
 
+    async getUserGeneratedCategory(token, expectedName: string) {
+        const response = await this.request.get('https://dev.rentzila.com.ua/api/services/', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        const responseBody = await response.json();
+
+        const submission = responseBody.find((form: { name: string; }) =>
+            form.name === expectedName
+        );
+
+        return submission;
+    }
+
+    async deleteUserSubmittedCategory(token, submissionId: number) {
+        const response = await this.request.delete(`https://dev.rentzila.com.ua/api/crm/services/${submissionId}/`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        expect(response.status()).toBe(204);
+    }
+
     async deleteCallbackFormSubmission(token, submissionId: number) {
         const response = await this.request.delete(`https://dev.rentzila.com.ua/api/backcall/${submissionId}/`, {
             headers: {
