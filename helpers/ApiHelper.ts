@@ -1,6 +1,9 @@
 import { APIRequestContext, expect } from '@playwright/test';
+import * as path from 'path';
+import * as fs from 'fs';
 
 let adminAccessToken = null;
+let accessToken = null;
 
 export class ApiHelper {
     private request: APIRequestContext;
@@ -21,6 +24,107 @@ export class ApiHelper {
             });
         }
         return adminAccessToken;
+    }
+
+    async createAccessToken() {
+        if (accessToken == null) {
+            await this.request.post("https://dev.rentzila.com.ua/api/auth/jwt/create/", {
+                data: {
+                    email: process.env.VALID_EMAIL || 'VALID_EMAIL',
+                    password: process.env.VALID_PASSWORD || 'VALID_PASSWORD',
+                }
+            }).then(async (response) => {
+                accessToken = (await response.json()).access;
+            });
+        }
+        return accessToken;
+    }
+
+    async createUnit(token, unitName: string, imageName: string) {
+        const payload = {
+            "category": 85,
+            "description": "Listing Description",
+            "features": "Features",
+            "first_name": "",
+            "last_name": "",
+            "lat": 50.453,
+            "lng": 30.516,
+            "manufacturer": 203,
+            "minimal_price": 12222,
+            "model_name": "Model Name",
+            "money_value": "UAH",
+            "name": unitName,
+            "owner": process.env.UNIT_OWNER_ID,
+            "payment_method": "CASH_OR_CARD",
+            "phone": "",
+            "services": [
+                144
+            ],
+            "time_of_work": "",
+            "type_of_work": "HOUR"
+        }
+
+        const response = await this.request.post('https://dev.rentzila.com.ua/api/units/', {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            data: payload
+        });
+
+        expect(response.status()).toBe(201);
+
+        const responseBody = await response.json();
+        const unitId = responseBody.id;
+        const isActiveStatus = responseBody.is_active;
+
+        expect(isActiveStatus).toBe(undefined);
+
+        const imagePath = path.resolve('data/files/images/', imageName);
+        const imageReadStream = fs.createReadStream(imagePath);
+
+        const imageResponse = await this.request.post('https://dev.rentzila.com.ua/api/unit-images/', {
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+            multipart: {
+                unit: unitId.toString(),
+                image: imageReadStream,
+                is_main: 'true'
+            }
+        });
+
+        expect(imageResponse.status()).toBe(201);
+
+        return unitId;
+    }
+
+    async setUnitActiveStatus(token, unitId: number) {
+        const response = await this.request.patch(`https://dev.rentzila.com.ua/api/crm/units/${unitId}/moderate/`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            data: {
+                is_approved: true
+            }
+        });
+
+        expect(response.status()).toBe(200);
+
+        const updatedResponse = await response.json();
+        expect(updatedResponse.is_approved).toBe(true);
+
+        return updatedResponse;
+    }
+
+    async deleteUnit(token, unitId: number) {
+        const response = await this.request.delete(`https://dev.rentzila.com.ua/api/crm/units/${unitId}/`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        expect(response.status()).toBe(204);
     }
 
     async getCallBackFormSubmission(token, expectedName: string, expectedPhone: string) {
