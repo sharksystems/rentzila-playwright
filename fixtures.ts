@@ -17,6 +17,8 @@ import HeaderElements from './page_elements/headerElements';
 import FooterElements from './page_elements/footerElements';
 import MyUnitsPage from './pages/MyUnitsPage';
 import UnitCreationPage from './pages/UnitCreationPage';
+import UnitCreationForm from './page_elements/UnitCreationForm';
+import EditUnitPage from './pages/EditUnitPage';
 
 type TestFixtures = {
     page: Page;
@@ -37,9 +39,18 @@ type TestFixtures = {
     footerElements: FooterElements;
     myUnitsPage: MyUnitsPage;
     unitCreationPage: UnitCreationPage;
+    unitCreationForm: UnitCreationForm;
+    editUnitPage: EditUnitPage;
 };
 
 export const test = baseTest.extend<TestFixtures>({
+
+    homePage: async ({ page }, use) => {
+        const homePage = new HomePage(page);
+        await homePage.open();
+        await closePopupIfVisible(page);
+        await use(homePage);
+    },
 
     apiHelper: async ({ }, use) => {
         const apiRequestContext: APIRequestContext = await request.newContext();
@@ -51,17 +62,10 @@ export const test = baseTest.extend<TestFixtures>({
         const headerElements = new HeaderElements(page);
         await use(headerElements);
     },
-    
+
     footerElements: async ({ page }, use) => {
         const footerElements = new FooterElements(page);
         await use(footerElements);
-    },
-
-    homePage: async ({ page }, use) => {
-        const homePage = new HomePage(page);
-        await homePage.open();
-        await closePopupIfVisible(page);
-        await use(homePage);
     },
 
     unitListingsPage: async ({ page }, use) => {
@@ -113,16 +117,29 @@ export const test = baseTest.extend<TestFixtures>({
         const loginPopup = new LoginPopup(page);
         await use(loginPopup);
     },
+
     myProfilePage: async ({ page }, use) => {
         const myProfilePage = new MyProfilePage(page);
         await use(myProfilePage);
     },
+
     myUnitsPage: async ({ page }, use) => {
         const myUnitsPage = new MyUnitsPage(page);
         await use(myUnitsPage);
     },
+
     unitCreationPage: async ({ page }, use) => {
         const unitCreationPage = new UnitCreationPage(page);
         await use(unitCreationPage);
+    },
+
+    unitCreationForm: async ({ page }, use) => {
+        const unitCreationForm = new UnitCreationForm(page);
+        await use(unitCreationForm);
+    },
+
+    editUnitPage: async ({ page }, use) => {
+        const editUnitPage = new EditUnitPage(page);
+        await use(editUnitPage);
     },
 });

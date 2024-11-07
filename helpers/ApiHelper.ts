@@ -119,6 +119,16 @@ export class ApiHelper {
         return updatedResponse;
     }
 
+    async getUnitDetails(token, unitId: number) {
+        const response = await this.request.get(`https://dev.rentzila.com.ua/api/units/${unitId}/`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        expect(response.status()).toBe(200);
+        return await response.json();
+    }
+
     async deleteUnit(token, unitId: number) {
         const response = await this.request.delete(`${baseURL}/api/crm/units/${unitId}/`, {
             headers: {

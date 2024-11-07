@@ -34,21 +34,21 @@ export default class HomePage extends BasePage {
     }
 
     async assertNameInputErrorStateNotVisible() {
-        expect(this.nameInputErrorState).not.toBeVisible();
+        await expect(this.nameInputErrorState).not.toBeVisible();
     }
 
     async assertPhoneInputErrorStateNotVisible() {
-        expect(this.phoneInputErrorState).not.toBeVisible();
+        await expect(this.phoneInputErrorState).not.toBeVisible();
     }
 
     async assertNameErrorVisibleWithText(message: string) {
-        expect(this.nameInputErrorState).toBeVisible();
-        expect(this.nameInputErrorMsg).toHaveText(message);
+        await expect(this.nameInputErrorState).toBeVisible();
+        await expect(this.nameInputErrorMsg).toHaveText(message);
     }
 
     async assertPhoneErrorVisibleWithText(message: string) {
-        expect(this.phoneInputErrorState).toBeVisible();
-        expect(this.phoneInputErrorMsg).toHaveText(message);
+        await expect(this.phoneInputErrorState).toBeVisible();
+        await expect(this.phoneInputErrorMsg).toHaveText(message);
     }
 
     async clickPhoneInputField() {
@@ -56,7 +56,7 @@ export default class HomePage extends BasePage {
     }
 
     async assertPhoneNumberExtentionPrefilled() {
-        expect(this.phoneNumberInput).toHaveValue("+380");
+        await expect(this.phoneNumberInput).toHaveValue("+380");
     }
 
     async enterName(name: string) {
