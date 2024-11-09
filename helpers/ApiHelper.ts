@@ -2,6 +2,7 @@ import { APIRequestContext, expect } from '@playwright/test';
 import * as path from 'path';
 import * as fs from 'fs';
 
+const baseURL = process.env.BASE_URL || 'BASE_URL';
 let adminAccessToken = null;
 let accessToken = null;
 
@@ -14,7 +15,7 @@ export class ApiHelper {
 
     async createAdminAccessToken() {
         if (adminAccessToken == null) {
-            await this.request.post("https://dev.rentzila.com.ua/api/auth/jwt/create/", {
+            await this.request.post(`${baseURL}/api/auth/jwt/create/`, {
                 data: {
                     email: process.env.ADMIN_EMAIL || 'ADMIN_EMAIL',
                     password: process.env.ADMIN_PASSWORD || 'ADMIN_PASSWORD',
@@ -28,7 +29,7 @@ export class ApiHelper {
 
     async createAccessToken() {
         if (accessToken == null) {
-            await this.request.post("https://dev.rentzila.com.ua/api/auth/jwt/create/", {
+            await this.request.post(`${baseURL}/api/auth/jwt/create/`, {
                 data: {
                     email: process.env.VALID_EMAIL || 'VALID_EMAIL',
                     password: process.env.VALID_PASSWORD || 'VALID_PASSWORD',
@@ -64,7 +65,7 @@ export class ApiHelper {
             "type_of_work": "HOUR"
         }
 
-        const response = await this.request.post('https://dev.rentzila.com.ua/api/units/', {
+        const response = await this.request.post(`${baseURL}/api/units/`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
@@ -83,7 +84,7 @@ export class ApiHelper {
         const imagePath = path.resolve('data/files/images/', imageName);
         const imageReadStream = fs.createReadStream(imagePath);
 
-        const imageResponse = await this.request.post('https://dev.rentzila.com.ua/api/unit-images/', {
+        const imageResponse = await this.request.post(`${baseURL}/api/unit-images/`, {
             headers: {
                 Authorization: `Bearer ${token}`
             },
@@ -100,7 +101,7 @@ export class ApiHelper {
     }
 
     async setUnitActiveStatus(token, unitId: number) {
-        const response = await this.request.patch(`https://dev.rentzila.com.ua/api/crm/units/${unitId}/moderate/`, {
+        const response = await this.request.patch(`${baseURL}/api/crm/units/${unitId}/moderate/`, {
             headers: {
                 'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
@@ -119,7 +120,7 @@ export class ApiHelper {
     }
 
     async deleteUnit(token, unitId: number) {
-        const response = await this.request.delete(`https://dev.rentzila.com.ua/api/crm/units/${unitId}/`, {
+        const response = await this.request.delete(`${baseURL}/api/crm/units/${unitId}/`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -128,7 +129,7 @@ export class ApiHelper {
     }
 
     async getCallBackFormSubmission(token, expectedName: string, expectedPhone: string) {
-        const response = await this.request.get('https://dev.rentzila.com.ua/api/backcall/', {
+        const response = await this.request.get(`${baseURL}/api/backcall/`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -144,7 +145,7 @@ export class ApiHelper {
     }
 
     async getUserGeneratedCategory(token, expectedName: string) {
-        const response = await this.request.get('https://dev.rentzila.com.ua/api/services/', {
+        const response = await this.request.get(`${baseURL}/api/services/`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -160,7 +161,7 @@ export class ApiHelper {
     }
 
     async deleteUserSubmittedCategory(token, submissionId: number) {
-        const response = await this.request.delete(`https://dev.rentzila.com.ua/api/crm/services/${submissionId}/`, {
+        const response = await this.request.delete(`${baseURL}/api/crm/services/${submissionId}/`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -169,7 +170,7 @@ export class ApiHelper {
     }
 
     async deleteCallbackFormSubmission(token, submissionId: number) {
-        const response = await this.request.delete(`https://dev.rentzila.com.ua/api/backcall/${submissionId}/`, {
+        const response = await this.request.delete(`${baseURL}/api/backcall/${submissionId}/`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
