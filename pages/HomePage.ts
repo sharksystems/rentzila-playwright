@@ -1,3 +1,4 @@
+import { StaticData } from '../data/StaticData';
 import BasePage from './BasePage';
 import { expect, Locator, Page } from '@playwright/test';
 
@@ -73,7 +74,7 @@ export default class HomePage extends BasePage {
         const dialogPromise = this.page.waitForEvent('dialog');
         await this.clickFormSubmitBtn();
         const dialog = await dialogPromise;
-        expect(dialog.message()).toContain('Ви успішно відправили заявку');
+        expect(dialog.message()).toContain(StaticData.dialogSubmissionSuccess);
         await dialog.accept();
     }
 

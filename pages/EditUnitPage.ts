@@ -1,5 +1,6 @@
 import BasePage from './BasePage';
 import { expect, Locator, Page } from '@playwright/test';
+import { elementsText } from '../helpers/jsonHelper';
 
 export default class EditUnitPage extends BasePage {
     private readonly editSubmitBtn: Locator;
@@ -26,10 +27,10 @@ export default class EditUnitPage extends BasePage {
     }
 
     async verifyEditSuccessMsgTitle() {
-        await expect(this.editSuccessMsgTitle).toHaveText("Вашe оголошення успішно відредаговане");
+        await expect(this.editSuccessMsgTitle).toHaveText(elementsText.unitEditing.editSuccessMsgTitle);
     }
 
     async verifyEditSuccessMsg() {
-        await expect(this.editSuccessMsg).toHaveText("Після перегляду модератором, Ваше оголошення з’явиться на сайті");
+        await expect(this.editSuccessMsg).toHaveText(elementsText.unitEditing.editSuccessMsg);
     }
 }

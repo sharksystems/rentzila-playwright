@@ -145,7 +145,7 @@ test.describe('Unit creation tests', async () => {
         await unitCreationForm.verifySelectedLocation('placeholder');
 
         await unitCreationForm.openMap();
-        await unitCreationForm.selectLocationAndVerify("default");
+        await unitCreationForm.selectLocationAndVerify('default');
         await unitCreationForm.openMap();
         await unitCreationForm.selectLocationAndVerify();
     });

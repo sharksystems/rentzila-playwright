@@ -1,5 +1,7 @@
 import { expect, Locator, Page } from '@playwright/test';
 import path from 'path';
+import { elementsText } from '../helpers/jsonHelper';
+import { StaticData } from '../data/StaticData';
 
 export default class LoginPopup {
     protected page: Page;
@@ -212,7 +214,7 @@ export default class LoginPopup {
 
     async verifyCreateNewServiceBtnContent() {
         const plusIcon = this.createNewServiceBtn.getByTestId("svg-plus-addNewItem");
-        await expect(this.createNewServiceBtn).toHaveText("Створити послугу");
+        await expect(this.createNewServiceBtn).toHaveText(elementsText.unitCreation.services.createServiceBtn);
         await expect(plusIcon).toBeVisible();
     }
 
@@ -234,13 +236,13 @@ export default class LoginPopup {
     }
 
     async verifyServiceInputTitle() {
-        await expect(this.serviceInputTitle).toHaveText("Знайдіть послуги, які надає Ваш технічний засіб *");
+        await expect(this.serviceInputTitle).toHaveText(elementsText.unitCreation.services.serviceSelectionTitle);
     }
 
     async verifyServiceSearchInputElements() {
         const searchIcon = this.serviceSearchInputWrapper.locator("svg[viewBox='0 0 18 18']");
         await expect(searchIcon).toBeVisible();
-        await expect(this.serviceSearchInput).toHaveAttribute('placeholder', 'Наприклад: Рихлення грунту, буріння');
+        await expect(this.serviceSearchInput).toHaveAttribute('placeholder', elementsText.unitCreation.services.serviceSelectionPlaceholer);
     }
 
     async assertServiceSearchInputErrorState(error: boolean = true) {
@@ -280,23 +282,23 @@ export default class LoginPopup {
     }
 
     async verifyPaymentMethodTitle() {
-        await expect(this.servicesPaymentMethodTitle).toHaveText("Спосіб оплати *");
+        await expect(this.servicesPaymentMethodTitle).toHaveText(elementsText.unitCreation.price.paymentMethodTitle);
     }
 
     async verifyMinimumPriceInputTitle() {
-        await expect(this.minPriceInputTitle).toHaveText("Вартість мінімального замовлення *");
+        await expect(this.minPriceInputTitle).toHaveText(elementsText.unitCreation.price.minimumPriceTitle);
     }
 
     async verifyMinimumPriceInputPlaceholder() {
-        await expect(this.minPriceInput).toHaveAttribute('placeholder', 'Наприклад, 1000');
+        await expect(this.minPriceInput).toHaveAttribute('placeholder', elementsText.unitCreation.price.priceInputPlaceholder);
     }
 
     async verifyServicesPriceSectionTitle() {
-        await expect(this.servicesPriceSectionTitle).toHaveText("Вартість Ваших послуг *");
+        await expect(this.servicesPriceSectionTitle).toHaveText(elementsText.unitCreation.price.servicesPriceTitle);
     }
 
     async verifyServicesPriceSectionClue() {
-        await expect(this.servicesPriceSectionClue).toHaveText("За бажанням Ви можете додати вартість конкретних послуг, які надає технічний засіб");
+        await expect(this.servicesPriceSectionClue).toHaveText(elementsText.unitCreation.price.servicesPriceClue);
     }
 
     async assertMinimumPriceErrorWithMsg(message: string) {
@@ -346,7 +348,7 @@ export default class LoginPopup {
 
         if (visible) {
             await expect(addPriceBtn).toBeVisible();
-            await expect(addPriceBtn).toHaveText("Додати вартість");
+            await expect(addPriceBtn).toHaveText(elementsText.unitCreation.price.addPriceBtn);
             await expect(plusIcon).toBeVisible();
         }
         else if (!visible) {
@@ -358,7 +360,7 @@ export default class LoginPopup {
     async verifyPriceInputPlaceholderOnService(service: string) {
         const serviceElement = this.getServiceByName(service);
         const priceInput = serviceElement.locator(this.minPriceInput);
-        await expect(priceInput).toHaveAttribute('placeholder', 'Наприклад, 1000');
+        await expect(priceInput).toHaveAttribute('placeholder', elementsText.unitCreation.price.priceInputPlaceholder);
     }
 
     async verifyCurrencyFieldOnService(service: string) {
@@ -488,7 +490,7 @@ export default class LoginPopup {
         const firstImageBlock = this.getImageBlockByIndex(0);
         const mainImageLabel = firstImageBlock.locator("[data-testid='mainImageLabel']");
 
-        await expect(mainImageLabel).toHaveText("Головне");
+        await expect(mainImageLabel).toHaveText(elementsText.unitCreation.photo.mainPhotoLabel);
     }
 
     async verifyImageInBlock(blockIndex: number, imgSource: string | null) {
@@ -624,33 +626,33 @@ export default class LoginPopup {
     }
 
     async assertCategorySelectionTitleText() {
-        await expect(this.categorySelectionTitle).toHaveText("Категорія *");
+        await expect(this.categorySelectionTitle).toHaveText(elementsText.unitCreation.generalInfo.categoryTitle);
     }
 
     async assertListingTitleInputTitleText() {
-        await expect(this.listingTitleInputTitle).toHaveText("Назва оголошення *");
+        await expect(this.listingTitleInputTitle).toHaveText(elementsText.unitCreation.generalInfo.unitNameTitle);
     }
 
     async verifyManufacturerInputElements() {
-        await expect(this.manufacturerInputTitle).toHaveText("Виробник транспортного засобу *");
-        await expect(this.manufacturerInput).toHaveAttribute("placeholder", "Введіть виробника транспортного засобу");
+        await expect(this.manufacturerInputTitle).toHaveText(elementsText.unitCreation.generalInfo.manufacturerTitle);
+        await expect(this.manufacturerInput).toHaveAttribute("placeholder", elementsText.unitCreation.generalInfo.manufacturerInputPlaceholder);
         await expect(this.manufacturerSearchIcon).toBeVisible();
     }
 
     async assertModelInputTitleText() {
-        await expect(this.modelInputTitle).toHaveText("Назва моделі");
+        await expect(this.modelInputTitle).toHaveText(elementsText.unitCreation.generalInfo.modelNameTitle);
     }
 
     async assertTechnicalDetailsInputTitle() {
-        await expect(this.technicalDetailsInputTitle).toHaveText("Технічні характеристики");
+        await expect(this.technicalDetailsInputTitle).toHaveText(elementsText.unitCreation.generalInfo.technicalDetailsTitle);
     }
 
     async assertDescriptionInputTitle() {
-        await expect(this.descriptionInputTitle).toHaveText("Детальний опис");
+        await expect(this.descriptionInputTitle).toHaveText(elementsText.unitCreation.generalInfo.descriptionTitle);
     }
 
-    async assertImageUploadTitle() {
-        await expect(this.imageUploadTitle).toHaveText("Фото технічного засобу *");
+    async assertMapSelectionTitle() {
+        await expect(this.mapSelectionTitle).toHaveText(elementsText.unitCreation.generalInfo.mapSelectionTitle);
     }
 
     async assertManufacturerSearhDropdownVisible() {
@@ -713,17 +715,12 @@ export default class LoginPopup {
         }
     }
 
-    async assertMapSelectionTitle() {
-        await expect(this.mapSelectionTitle).toHaveText("Місце розташування технічного засобу *");
-    }
-
-    async verifySelectedLocation(label: 'location'|'placeholder', location?: string) {
+    async verifySelectedLocation(label: 'location' | 'placeholder', location?: string) {
         if (label == 'placeholder') {
-            await expect(this.selectedLocationLabel).toHaveText("Виберіть на мапі");
+            await expect(this.selectedLocationLabel).toHaveText(elementsText.unitCreation.generalInfo.mapSelectionPlaceholder);
         } else if (label == 'location' && location) {
             await expect(this.selectedLocationLabel).toHaveText(location);
         }
-        
     }
 
     async assertMapSelectionErrorWithMsg(message: string) {
@@ -739,15 +736,15 @@ export default class LoginPopup {
     }
 
     async assertMapPopupTitle() {
-        await expect(this.mapPopupTitle).toHaveText("Техніка на мапі");
+        await expect(this.mapPopupTitle).toHaveText(elementsText.unitCreation.mapPopup.mapPopupTitle);
     }
 
     async assertDefaultLocationPreselected() {
         await this.mapPopup.waitFor();
-        await expect(this.mapSelectedLocation).toHaveText("Київ, вулиця Володимирська 21/20 Україна, Київська область");
+        await expect(this.mapSelectedLocation).toHaveText(StaticData.defaultAddress);
     }
 
-    async assertCategoryPopupVisibility(visible: boolean = false) {
+    async assertCategoryPopupVisibility(visible: boolean = true) {
         if (visible) {
             await expect(this.categorySelectionPopup).toBeVisible();
         } else if (!visible) {
@@ -763,8 +760,12 @@ export default class LoginPopup {
         await expect(this.manufacturerNotFoundMsg).toHaveText(`На жаль, виробника “${manufacturer}“ не знайдено в нашій базі.` + " Щоб додати виробника - зв`яжіться із службою підтримки");
     }
 
+    async assertImageUploadTitle() {
+        await expect(this.imageUploadTitle).toHaveText(elementsText.unitCreation.photo.photoUploadTitle);
+    }
+
     async assertImageUploadClueText() {
-        await expect(this.imageUploadClueText).toHaveText("Додайте в оголошення від 1 до 12 фото технічного засобу розміром до 20 МВ у форматі .jpg, .jpeg, .png. Перше фото буде основним.");
+        await expect(this.imageUploadClueText).toHaveText(elementsText.unitCreation.photo.photoUploadClue);
     }
 
     async assertImageUploadClueErrorState() {
@@ -777,7 +778,7 @@ export default class LoginPopup {
     }
 
     async assertServiceSelectionClueText() {
-        await expect(this.serviceInputClue).toHaveText("Додайте в оголошення принаймні 1 послугу");
+        await expect(this.serviceInputClue).toHaveText(elementsText.unitCreation.services.serviceSelectionClue);
     }
 
     async assertServiceSelectionClueErrorState() {
@@ -795,7 +796,7 @@ export default class LoginPopup {
 
     async assertSelectedServicesTitleVisibility(visible: boolean = true) {
         if (visible) {
-            await expect(this.selectedServicesTitle).toHaveText("Послуги, які надає технічний засіб:");
+            await expect(this.selectedServicesTitle).toHaveText(elementsText.unitCreation.services.selectedServicesTitle);
         } else if (!visible) {
             await expect(this.selectedServicesTitle).not.toBeVisible();
         }

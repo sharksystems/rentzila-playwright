@@ -12,6 +12,8 @@ export enum StaticData {
     defaultAdressLong = "30.516",
     serviceDigging = "Риття ям",
     serviceBoring = "Буріння",
+    dialogConfirmExit = "Ви впевнені, що хочете перейти на іншу сторінку? Внесені дані не збережуться!",
+    dialogSubmissionSuccess = "Ви успішно відправили заявку",
 
     validPrice = "123456789",
     validPrice2 = "1234",

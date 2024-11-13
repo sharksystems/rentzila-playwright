@@ -26,7 +26,6 @@ test.describe('Unit editing tests', async () => {
         await myUnitsPage.clickEditBtnOnUnit(unitName);
         await unitCreationForm.assertUnitNameInputValue(unitName);
         await unitCreationForm.verifySelectedLocation('location', StaticData.defaultAddress);
-
     });
 
     test.afterEach(async ({ apiHelper }) => {
@@ -66,7 +65,6 @@ test.describe('Unit editing tests', async () => {
 
         const updatedUnit = await apiHelper.getUnitDetails(accessToken, unitId);
         expect(updatedUnit.name).toBe(newUnitName);
-
     });
 
     test('C273 - Check "Виробник транспортного засобу" input field', async ({ apiHelper, editUnitPage, myUnitsPage, unitCreationForm, randomData }) => {

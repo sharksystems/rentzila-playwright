@@ -1,5 +1,7 @@
 import BasePage from './BasePage';
 import { expect, Locator, Page } from '@playwright/test';
+import { elementsText } from '../helpers/jsonHelper';
+import { StaticData } from '../data/StaticData';
 
 export default class UnitCreationPage extends BasePage {
     private readonly unitCreationFormTitle: Locator;
@@ -29,13 +31,13 @@ export default class UnitCreationPage extends BasePage {
         const dialogPromise = this.page.waitForEvent('dialog');
         await this.cancelBtn.click({ noWaitAfter: true });
         const dialog = await dialogPromise;
-        expect(dialog.message()).toContain('Ви впевнені, що хочете перейти на іншу сторінку? Внесені дані не збережуться!');
+        expect(dialog.message()).toContain(StaticData.dialogConfirmExit);
         await dialog.accept();
         expect(this.page).toHaveURL("/owner-units-page/");
     }
 
     async assertUnitCreationFormTitle() {
-        expect(this.unitCreationFormTitle).toHaveText("Створити оголошення");
+        expect(this.unitCreationFormTitle).toHaveText(elementsText.unitCreationPage.unitCreationFormTitle);
     }
 
     getTabTitleByIndex(index: number) {
@@ -54,10 +56,10 @@ export default class UnitCreationPage extends BasePage {
     }
 
     async verifyTabsText() {
-        await expect(this.getTabTitleByIndex(0)).toHaveText("1Основна інформація");
-        await expect(this.getTabTitleByIndex(1)).toHaveText("2Фотографії");
-        await expect(this.getTabTitleByIndex(2)).toHaveText("3Послуги");
-        await expect(this.getTabTitleByIndex(3)).toHaveText("4Вартість");
-        await expect(this.getTabTitleByIndex(4)).toHaveText("5Контакти");
+        await expect(this.getTabTitleByIndex(0)).toHaveText(elementsText.unitCreationPage.generalInfoTab);
+        await expect(this.getTabTitleByIndex(1)).toHaveText(elementsText.unitCreationPage.photoTab);
+        await expect(this.getTabTitleByIndex(2)).toHaveText(elementsText.unitCreationPage.servicesTab);
+        await expect(this.getTabTitleByIndex(3)).toHaveText(elementsText.unitCreationPage.priceTab);
+        await expect(this.getTabTitleByIndex(4)).toHaveText(elementsText.unitCreationPage.contactsTab);
     }
 }
