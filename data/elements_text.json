@@ -1,0 +1,54 @@
+{
+    "unitCreation": {
+        "generalInfo": {
+            "categoryTitle": "Категорія *",
+            "unitNameTitle": "Назва оголошення *",
+            "manufacturerTitle": "Виробник транспортного засобу *",
+            "manufacturerInputPlaceholder": "Введіть виробника транспортного засобу",
+            "modelNameTitle": "Назва моделі",
+            "technicalDetailsTitle": "Технічні характеристики",
+            "descriptionTitle": "Детальний опис",
+            "mapSelectionTitle": "Місце розташування технічного засобу *",
+            "mapSelectionPlaceholder": "Виберіть на мапі"
+        },
+        "mapPopup": {
+            "mapPopupTitle": "Техніка на мапі"
+        },
+        "photo": {
+            "photoUploadTitle": "Фото технічного засобу *",
+            "photoUploadClue": "Додайте в оголошення від 1 до 12 фото технічного засобу розміром до 20 МВ у форматі .jpg, .jpeg, .png. Перше фото буде основним.",
+            "mainPhotoLabel": "Головне"
+        },
+        "services": {
+            "serviceSelectionTitle": "Знайдіть послуги, які надає Ваш технічний засіб *",
+            "serviceSelectionClue": "Додайте в оголошення принаймні 1 послугу",
+            "serviceSelectionPlaceholer": "Наприклад: Рихлення грунту, буріння",
+            "createServiceBtn": "Створити послугу",
+            "selectedServicesTitle": "Послуги, які надає технічний засіб:"
+        },
+        "price": {
+            "paymentMethodTitle": "Спосіб оплати *",
+            "minimumPriceTitle": "Вартість мінімального замовлення *",
+            "priceInputPlaceholder": "Наприклад, 1000",
+            "servicesPriceTitle": "Вартість Ваших послуг *",
+            "servicesPriceClue": "За бажанням Ви можете додати вартість конкретних послуг, які надає технічний засіб",
+            "addPriceBtn": "Додати вартість"
+        }
+    },
+    "unitCreationPage": {
+        "unitCreationFormTitle": "Створити оголошення",
+        "cancelBtnConfirmDialog": "Ви впевнені, що хочете перейти на іншу сторінку? Внесені дані не збережуться!",
+        "generalInfoTab": "1Основна інформація",
+        "photoTab": "2Фотографії",
+        "servicesTab": "3Послуги",
+        "priceTab": "4Вартість",
+        "contactsTab": "5Контакти"
+    },
+    "unitEditing": {
+        "editSuccessMsgTitle": "Вашe оголошення успішно відредаговане",
+        "editSuccessMsg": "Після перегляду модератором, Ваше оголошення з’явиться на сайті"
+    },
+    "profile": {
+        "phoneVerifiedMsg": "Успішно верифіковано"
+    }
+}

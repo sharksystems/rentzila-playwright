@@ -1,3 +1,4 @@
+import { StaticData } from '../data/StaticData';
 import BasePage from './BasePage';
 import { expect, Locator, Page } from '@playwright/test';
 
@@ -34,21 +35,21 @@ export default class HomePage extends BasePage {
     }
 
     async assertNameInputErrorStateNotVisible() {
-        expect(this.nameInputErrorState).not.toBeVisible();
+        await expect(this.nameInputErrorState).not.toBeVisible();
     }
 
     async assertPhoneInputErrorStateNotVisible() {
-        expect(this.phoneInputErrorState).not.toBeVisible();
+        await expect(this.phoneInputErrorState).not.toBeVisible();
     }
 
     async assertNameErrorVisibleWithText(message: string) {
-        expect(this.nameInputErrorState).toBeVisible();
-        expect(this.nameInputErrorMsg).toHaveText(message);
+        await expect(this.nameInputErrorState).toBeVisible();
+        await expect(this.nameInputErrorMsg).toHaveText(message);
     }
 
     async assertPhoneErrorVisibleWithText(message: string) {
-        expect(this.phoneInputErrorState).toBeVisible();
-        expect(this.phoneInputErrorMsg).toHaveText(message);
+        await expect(this.phoneInputErrorState).toBeVisible();
+        await expect(this.phoneInputErrorMsg).toHaveText(message);
     }
 
     async clickPhoneInputField() {
@@ -56,7 +57,7 @@ export default class HomePage extends BasePage {
     }
 
     async assertPhoneNumberExtentionPrefilled() {
-        expect(this.phoneNumberInput).toHaveValue("+380");
+        await expect(this.phoneNumberInput).toHaveValue("+380");
     }
 
     async enterName(name: string) {
@@ -73,7 +74,7 @@ export default class HomePage extends BasePage {
         const dialogPromise = this.page.waitForEvent('dialog');
         await this.clickFormSubmitBtn();
         const dialog = await dialogPromise;
-        expect(dialog.message()).toContain('Ви успішно відправили заявку');
+        expect(dialog.message()).toContain(StaticData.dialogSubmissionSuccess);
         await dialog.accept();
     }
 
